@@ -87,12 +87,16 @@ dan semoga aku bisa jadi salah satu alasan kamu tersenyum.
 function munculSurat(){
 
 let surat = document.getElementById("surat");
+let tombol = document.getElementById("tombol");
 
 surat.style.display = "block";
 
 setTimeout(function(){
     surat.style.opacity = "1";
 },100);
+
+tombol.innerHTML = "❤️ Surat Sudah Dibuka";
+
 }
 </script>
 </body>

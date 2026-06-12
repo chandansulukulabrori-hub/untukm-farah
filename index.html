@@ -83,7 +83,15 @@ dan semoga aku bisa jadi salah satu alasan kamu tersenyum.
 
 <script>
 function munculSurat(){
-document.getElementById("surat").style.display="block";
+
+let surat = document.getElementById("surat");
+
+surat.style.display = "block";
+
+setTimeout(function(){
+    surat.style.opacity = "1";
+},100);
+
 }
 </script>
 </body>

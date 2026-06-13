@@ -48,7 +48,9 @@ p{
     position:fixed;
     top:-20px;
     font-size:25px;
-    animation:jatuh 4s linear forwards;
+    animation:
+    jatuh 4s linear forwards,
+    putar 2s linear infinite;
 }
 
 @keyframes jatuh{
@@ -60,7 +62,15 @@ p{
         top:100vh;
     }
 }
+@keyframes putar{
+    from{
+        transform:rotate(0deg);
+    }
 
+    to{
+        transform:rotate(360deg);
+    }
+}
 </style>
 
 </head>
@@ -90,17 +100,22 @@ cursor:pointer;
 💌 Buka Surat
 </button>
 
-<p id="surat">
-Hai Farah 🌻
+<div id="surat">
+<h3>Hai Farah 🌻</h3>
 
+<p>
 Makasih ya udah hadir di hidupku.
-    
-Semoga hari-harimu selalu dipenuhi hal baik,
-dan semoga aku bisa jadi salah satu alasan kamu tersenyum.
-
-❤️
 </p>
 
+<p>
+Semoga hari-harimu selalu dipenuhi hal baik,
+dan semoga aku bisa jadi salah satu alasan kamu tersenyum.
+</p>
+
+<p>
+❤️
+</p>
+</div>
 <script>
 function munculSurat(){
 

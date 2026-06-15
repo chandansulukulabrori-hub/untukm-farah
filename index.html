@@ -14,35 +14,48 @@
     margin:auto;
     overflow-x: hidden;
     }
-.galeri-foto {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    max-width: 500px;
+.slider-container {
+    position: relative;
+    max-width: 320px;
     margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.galeri-foto img {
-    width: 100%;
-    height: 180px;
+.slider-foto {
+    display: none;
+    width: 250px;
+    height: 330px;
     object-fit: cover;
-    border-radius: 15px;
-    box-shadow: 0 0 15px pink;
+    border-radius: 20px;
+    box-shadow: 0 0 20px pink;
     cursor: pointer;
     transition: 0.3s;
 }
-.galeri-foto img:hover {
+.slider-foto.aktif {
+    display: block;
+}
+.slider-foto:hover {
     transform: scale(1.05);
 }
-#foto{
-    width:250px;
-    border-radius:20px;
-    box-shadow:0 0 20px pink;
+.tombol-panah {
+    position: absolute;
+    background: rgba(255, 111, 165, 0.7);
+    color: white;
+    border: none;
+    font-size: 20px;
+    padding: 10px 13px;
+    border-radius: 50%;
     cursor: pointer;
+    z-index: 10;
+    user-select: none;
+    transition: 0.2s;
 }
-#foto:hover{
-    transform:scale(1.05);
-    transition:0.3s;
+.tombol-panah:hover {
+    background: rgba(255, 111, 165, 1);
 }
+.kiri { left: 0; }
+.kanan { right: 0; }
 h1, #tombol, #surat h3 {
     font-family: 'Pacifico', cursive;
     color:#ff4d88;
@@ -115,15 +128,17 @@ p{
 <body>
 <audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
+<div class="slider-container">
+    <button class="tombol-panah kiri" onclick="geserFoto(-1)">&#10094;</button>
 
-<div class="galeri-foto">
-    <img src="IMG-20260610-WA0002.jpg" onclick="bukaFoto(this.src)">
-    <img src="foto1.jpg" onclick="bukaFoto(this.src)">
-    <img src="foto2.jpg" onclick="bukaFoto(this.src)">
-    <img src="foto3.jpg" onclick="bukaFoto(this.src)">
-    <img src="foto4.jpg" onclick="bukaFoto(this.src)">
+    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto1.jpeg" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto2.jpeg" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto3.jpeg" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto4.jpeg" onclick="bukaFoto(this.src)">
+
+    <button class="tombol-panah kanan" onclick="geserFoto(1)">&#10095;</button>
 </div>
-
 <p>
 Makasih ya udah hadir di hidupku ❤️
 </p>
@@ -145,7 +160,7 @@ cursor:pointer;
 </button>
 
 <div id="fotoBesar" onclick="tutupFoto()">
-    <img src=""> </div>
+    <img src="">
 </div>
 
 <div id="surat">
@@ -203,6 +218,20 @@ setTimeout(function() {
     }
 }
 
+let indeksFoto = 0;
+
+function geserFoto(arah) {
+    let daftarFoto = document.getElementsByClassName("slider-foto");
+    daftarFoto[indeksFoto].classList.remove("aktif");
+    indeksFoto = indeksFoto + arah;
+    if (indeksFoto >= daftarFoto.length) {
+        indeksFoto = 0;
+    }
+    if (indeksFoto < 0) {
+        indeksFoto = daftarFoto.length - 1;
+    }
+    daftarFoto[indeksFoto].classList.add("aktif");
+}
 function bukaFoto(jalurGambar){
     // 1. Ganti gambar di dalam pop-up sesuai gambar yang diklik Farah
     document.querySelector("#fotoBesar img").src = jalurGambar;

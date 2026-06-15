@@ -13,6 +13,8 @@
     margin:auto;
     overflow-x: hidden;
     }
+
+/* Wadah utama slider foto */
 .slider-container {
     position: relative;
     max-width: 320px;
@@ -21,45 +23,52 @@
     align-items: center;
     justify-content: center;
 }
+
+/* Mengatur semua foto di dalam slider */
 .slider-foto {
-    display: none;
+    display: none; /* Sembunyikan semua foto dulu */
     width: 250px;
     height: 330px;
     object-fit: cover;
     border-radius: 20px;
     box-shadow: 0 0 20px pink;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: 0.3s;
 }
-.slider-foto.aktif, #fotoBesar img.aktif-pop {
+
+/* Hanya foto dengan class 'aktif' yang akan muncul */
+.slider-foto.aktif {
     display: block;
-    animation: pudarHalus 0.4s ease-in-out;
 }
+
 .slider-foto:hover {
     transform: scale(1.05);
 }
-@keyframes pudarHalus {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
+
+/* Mengatur Tombol Panah Kanan dan Kiri agar Pas di PC & HP */
 .tombol-panah {
     position: absolute;
-    background: rgba(255, 111, 165, 0.85);
+    background: rgba(255, 111, 165, 0.8);
     color: white;
     border: none;
     font-size: 24px;
     padding: 12px 15px;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 10000;
+    z-index: 10;
     user-select: none;
-    transition: 0.2s;
+    transition: all 0.3s ease;
 }
+
 .tombol-panah:hover {
     background: rgba(255, 111, 165, 1);
+    transform: scale(1.1);
 }
+
 .kiri { left: 0; }
 .kanan { right: 0; }
+
+/* Judul dan Tombol Surat */
 h1, #tombol, #surat h3 {
     font-family: 'Pacifico', cursive;
     color:#ff4d88;
@@ -81,6 +90,8 @@ p{
     opacity:0;
     transition:1s;
 }   
+
+/* Animasi Hati */
 .hati{
     position:fixed;
     top:-20px;
@@ -93,21 +104,15 @@ p{
 }
 
 @keyframes jatuh{
-    from{
-        top:-20px;
-    }
-    to{
-        top:100vh;
-    }
+    from{ top:-20px; }
+    to{ top:100vh; }
 }
 @keyframes putar{
-    from{
-        transform:rotate(0deg);
-    }
-    to{
-        transform:rotate(360deg);
-    }
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(360deg); }
 }
+
+/* Pop-up Foto Layar Penuh */
 #fotoBesar {
     display: none;
     position: fixed;
@@ -119,13 +124,21 @@ p{
     z-index: 9999;
     justify-content: center;
     align-items: center; 
+    cursor: pointer;
 }
 #fotoBesar img {
-    display: none;
     width: 85%;
     max-width: 450px;
     border-radius: 15px; 
-    cursor: pointer;
+}
+
+/* Responsif buat HP */
+@media screen and (max-width: 480px) {
+    body { padding: 20px; }
+    .tombol-panah {
+        font-size: 20px;
+        padding: 10px 13px;
+    }
 }
 </style>
 
@@ -133,6 +146,7 @@ p{
 <body>
 <audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
+
 <div class="slider-container">
     <button class="tombol-panah kiri" onclick="geserFoto(-1)">&#10094;</button>
 
@@ -144,23 +158,11 @@ p{
 
     <button class="tombol-panah kanan" onclick="geserFoto(1)">&#10095;</button>
 </div>
-<p>
-Makasih ya udah hadir di hidupku ❤️
-</p>
 
-<p>
-Semoga kita selalu diberi kebahagiaan dan cerita indah.
-</p>
-<button id="tombol" onclick="munculSurat()"
-style="
-padding:12px 25px;
-font-size:18px;
-border:none;
-border-radius:15px;
-background:#ff6fa5;
-color:white;
-cursor:pointer;
-">
+<p>Makasih ya udah hadir di hidupku ❤️</p>
+<p>Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
+
+<button id="tombol" onclick="munculSurat()" style="padding:12px 25px; font-size:18px; border:none; border-radius:15px; background:#ff6fa5; color:white; cursor:pointer;">
 💌 Buka Surat
 </button>
 
@@ -170,22 +172,30 @@ cursor:pointer;
 
 <div id="surat">
 <h3>Hai Farah 🌻</h3>
-
-<p>
-Makasih ya udah hadir di hidupku.
-</p>
-
-<p>
-Semoga hari-harimu selalu dipenuhi hal baik,
-dan semoga aku bisa jadi salah satu alasan kamu tersenyum.
-</p>
-
-<p>
-❤️
-</p>
+<p>Makasih ya udah hadir di hidupku.</p>
+<p>Semoga hari-harimu selalu dipenuhi hal baik, dan semoga aku bisa jadi salah satu alasan kamu tersenyum.</p>
+<p>❤️</p>
 </div>
 
 <script>
+let indeksFoto = 0;
+
+function geserFoto(arah) {
+    let daftarFoto = document.getElementsByClassName("slider-foto");
+    daftarFoto[indeksFoto].classList.remove("aktif");
+    
+    indeksFoto = indeksFoto + arah;
+    
+    if (indeksFoto >= daftarFoto.length) {
+        indeksFoto = 0;
+    }
+    if (indeksFoto < 0) {
+        indeksFoto = daftarFoto.length - 1;
+    }
+    
+    daftarFoto[indeksFoto].classList.add("aktif");
+}
+
 function munculSurat(){
     let surat = document.getElementById("surat");
     let tombol = document.getElementById("tombol");
@@ -209,54 +219,21 @@ function munculSurat(){
         hati.className = "hati";
         hati.style.left = Math.random()*100 + "vw";
         hati.style.animationDuration = (Math.random()*3 + 2) + "s";
-
         document.body.appendChild(hati);
         setTimeout(function() {
             hati.remove();
         }, 5000);
     }
-} 
-
-let indeksFoto = 0;
-
-function geserFoto(arah) {
-    let daftarFoto = document.getElementsByClassName("slider-foto");
-    daftarFoto[indeksFoto].classList.remove("aktif");
-    
-    indeksFoto = indeksFoto + arah;
-    if (indeksFoto >= daftarFoto.length) {
-        indeksFoto = 0;
-    }
-    if (indeksFoto < 0) {
-        indeksFoto = daftarFoto.length - 1;
-    }
-    
-    daftarFoto[indeksFoto].classList.add("aktif");
-    
-    let popUp = document.getElementById("fotoBesar");
-    let gambarPopUp = document.querySelector("#fotoBesar img");
-    
-    if (popUp.style.display === "flex") {
-        gambarPopUp.classList.remove("aktif-pop");
-        gambarPopUp.src = daftarFoto[indeksFoto].src;
-        setTimeout(function(){
-            gambarPopUp.classList.add("aktif-pop");
-        }, 10);
-    }
 }
 
 function bukaFoto(jalurGambar){
-    let gambarPopUp = document.querySelector("#fotoBesar img");
-    gambarPopUp.src = jalurGambar;
-    gambarPopUp.classList.add("aktif-pop");
-    
+    document.querySelector("#fotoBesar img").src = jalurGambar;
     document.getElementById("fotoBesar").style.display = "flex";
     document.getElementById("laguLatar").play();
 }
 
 function tutupFoto(){
     document.getElementById("fotoBesar").style.display = "none";
-    document.querySelector("#fotoBesar img").classList.remove("aktif-pop");
     document.getElementById("laguLatar").pause();
 }
 </script>

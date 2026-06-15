@@ -2,19 +2,37 @@
 <html>
 <head>
 <title>Untuk Farah 🌻</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
     body{
     background:#ffe6f0;
     text-align:center;
-    font-family:Pacifico;
+    font-family:'Poppins', sans-serif
     padding:40px;
 
     max-width:700px;
     margin:auto;
     overflow-x: hidden;
     }
-
+.galeri-foto {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    max-width: 500px;
+    margin: 20px auto;
+}
+.galeri-foto img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 0 15px pink;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.galeri-foto img:hover {
+    transform: scale(1.05);
+}
 #foto{
     width:250px;
     border-radius:20px;
@@ -25,7 +43,8 @@
     transform:scale(1.05);
     transition:0.3s;
 }
-h1{
+h1, #tombol, #surat h3 {
+    font-family: 'Pacifico', cursive;
     color:#ff4d88;
 }
 
@@ -97,10 +116,13 @@ p{
 <audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
 
-<img
-id="foto"
-src="IMG-20260610-WA0002.jpg"
-onclick="bukaFoto()">
+<div class="galeri-foto">
+    <img src="IMG-20260610-WA0002.jpg" onclick="bukaFoto(this.src)">
+    <img src="foto1.jpeg" onclick="bukaFoto(this.src)">
+    <img src="foto2.jpeg" onclick="bukaFoto(this.src)">
+    <img src="foto3.jpeg" onclick="bukaFoto(this.src)">
+    <img src="foto4.jpeg" onclick="bukaFoto(this.src)">
+</div>
 
 <p>
 Makasih ya udah hadir di hidupku ❤️
@@ -123,7 +145,7 @@ cursor:pointer;
 </button>
 
 <div id="fotoBesar" onclick="tutupFoto()">
-    <img src="IMG-20260610-WA0002.jpg">
+    <">
 </div>
 
 <div id="surat">
@@ -181,7 +203,9 @@ setTimeout(function() {
     }
 }
 
-function bukaFoto(){
+function bukaFoto(jalurGambar){
+    // 1. Ganti gambar di dalam pop-up sesuai gambar yang diklik Farah
+    document.querySelector("#fotoBesar img").src = jalurGambar;
     document.getElementById("fotoBesar").style.display = "flex";
     document.getElementById("laguLatar").play();
 }

@@ -94,7 +94,7 @@ p{
 
 </head>
 <body>
-
+<audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
 
 <img
@@ -183,10 +183,12 @@ setTimeout(function() {
 
 function bukaFoto(){
     document.getElementById("fotoBesar").style.display = "flex";
+    document.getElementById("laguLatar").play();
 }
 
 function tutupFoto(){
     document.getElementById("fotoBesar").style.display = "none";
+    document.getElementById("laguLatar").play();
 }
 </script>
 </body>

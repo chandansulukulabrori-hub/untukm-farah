@@ -12,12 +12,14 @@
 
     max-width:700px;
     margin:auto;
+    overflow-x: hidden;
     }
 
 img{
     width:250px;
     border-radius:20px;
     box-shadow:0 0 20px pink;
+    cursor: pointer;
 }
 img:hover{
     transform:scale(1.05);
@@ -42,12 +44,12 @@ p{
     line-height:1.8;
     opacity:0;
     transition:1s;
-}
-    
+}   
 .hati{
     position:fixed;
     top:-20px;
     font-size:25px;
+    z-index: -1;
     animation:
     jatuh 4s linear forwards,
     putar 2s linear infinite;
@@ -57,7 +59,6 @@ p{
     from{
         top:-20px;
     }
-
     to{
         top:100vh;
     }
@@ -66,25 +67,27 @@ p{
     from{
         transform:rotate(0deg);
     }
-
     to{
         transform:rotate(360deg);
     }
 }
-#fotoBesar{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.8);
-}
-
-#fotoBesar img{
-    width:80%;
-    max-width:600px;
-    margin-top:50px;
+#fotoBesar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center; 
+    cursor: pointer;
+    }
+#fotoBesar img {
+    width: 85%;
+    max-width: 500px;
+    border-radius: 15px; 
 }
 </style>
 
@@ -171,17 +174,17 @@ hati.style.animationDuration =
 (Math.random()*3 + 2) + "s";
 
 document.body.appendChild(hati);
-
+setTimeout(function() {
+    hati.remove();
+}, 5000);
+    
 }
-
-}
-
 function bukaFoto(){
-document.getElementById("fotoBesar").style.display = "block";
+    document.getElementById("fotoBesar").style.display = "flex";
 }
 
 function tutupFoto(){
-document.getElementById("fotoBesar").style.display = "none";
+    document.getElementById("fotoBesar").style.display = "none";
 }
 </script>
 </body>

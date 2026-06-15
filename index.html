@@ -14,19 +14,16 @@
     overflow-x: hidden;
     }
 
-
+/* Wadah utama slider foto */
 .slider-container {
     position: relative;
-    max-width: 320px;
+    max-width: 250px;
     margin: 20px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-
+/* Mengatur semua foto di dalam slider */
 .slider-foto {
-    display: none; 
+    display: none;
     width: 250px;
     height: 330px;
     object-fit: cover;
@@ -36,36 +33,47 @@
     transition: 0.3s;
 }
 
+/* Hanya foto dengan class 'aktif' yang akan muncul */
 .slider-foto.aktif {
     display: block;
 }
 
-.slider-foto:hover {
-    transform: scale(1.05);
+.slider-foto.aktif, #fotoBesar img.aktif-pop {
+    animation: pudarHalus 0.4s ease-in-out;
 }
 
+@keyframes pudarHalus {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Mengatur Tombol Panah Global (Tetap pas di PC, HP, dan pas Zoom Gede) */
 .tombol-panah {
-    position: absolute;
-    background: rgba(255, 111, 165, 0.8);
+    position: fixed; /* Diubah jadi fixed agar posisinya mengambang stabil di layar */
+    top: 50%; /* Tepat di tengah layar secara vertikal */
+    transform: translateY(-50%);
+    background: rgba(255, 111, 165, 0.85);
     color: white;
     border: none;
     font-size: 24px;
     padding: 12px 15px;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 10;
+    z-index: 10000; /* Nilai super tinggi supaya muncul di atas overlay hitam pas diperbesar */
     user-select: none;
-    transition: all 0.3s ease;
+    transition: 0.2s;
 }
 
 .tombol-panah:hover {
     background: rgba(255, 111, 165, 1);
-    transform: scale(1.1);
+    transform: translateY(-50%) scale(1.1);
 }
 
-.kiri { left: 0; }
-.kanan { right: 0; }
+/* Jarak panah dari pinggir layar PC / HP */
+.kiri { left: 5%; }
+.kanan { right: 5%; }
 
+/* Judul dan Tombol Surat */
 h1, #tombol, #surat h3 {
     font-family: 'Pacifico', cursive;
     color:#ff4d88;
@@ -88,11 +96,12 @@ p{
     transition:1s;
 }   
 
+/* Animasi Hati */
 .hati{
     position:fixed;
     top:-20px;
     font-size:25px;
-    z-index: 999;
+    z-index: 99999;
     pointer-events:none;
     animation:
     jatuh 4s linear forwards,
@@ -108,6 +117,7 @@ p{
     to{ transform:rotate(360deg); }
 }
 
+/* Pop-up Foto Layar Penuh */
 #fotoBesar {
     display: none;
     position: fixed;
@@ -119,21 +129,24 @@ p{
     z-index: 9999;
     justify-content: center;
     align-items: center; 
-    cursor: pointer;
 }
 #fotoBesar img {
+    display: none;
     width: 85%;
     max-width: 450px;
     border-radius: 15px; 
+    cursor: pointer;
 }
 
-/* Responsif buat HP */
+/* Responsif buat HP (Biar panahnya gak terlalu mepet layar kecil) */
 @media screen and (max-width: 480px) {
     body { padding: 20px; }
     .tombol-panah {
         font-size: 20px;
         padding: 10px 13px;
     }
+    .kiri { left: 2%; }
+    .kanan { right: 2%; }
 }
 </style>
 
@@ -142,17 +155,17 @@ p{
 <audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
 
-<div class="slider-container">
-    <button class="tombol-panah kiri" onclick="geserFoto(-1)">&#10094;</button>
+<button class="tombol-panah kiri" onclick="geserFoto(-1)">&#10094;</button>
 
+<div class="slider-container">
     <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" onclick="bukaFoto(this.src)">
     <img class="slider-foto" src="foto1.jpeg" onclick="bukaFoto(this.src)">
     <img class="slider-foto" src="foto2.jpeg" onclick="bukaFoto(this.src)">
     <img class="slider-foto" src="foto3.jpeg" onclick="bukaFoto(this.src)">
     <img class="slider-foto" src="foto4.jpeg" onclick="bukaFoto(this.src)">
-
-    <button class="tombol-panah kanan" onclick="geserFoto(1)">&#10095;</button>
 </div>
+
+<button class="tombol-panah kanan" onclick="geserFoto(1)">&#10095;</button>
 
 <p>Makasih ya udah hadir di hidupku ❤️</p>
 <p>Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
@@ -189,6 +202,18 @@ function geserFoto(arah) {
     }
     
     daftarFoto[indeksFoto].classList.add("aktif");
+    
+    // Logika sinkronisasi: kalau foto besar lagi kebuka, ikut ganti gambarnya di dalam pop-up
+    let popUp = document.getElementById("fotoBesar");
+    let gambarPopUp = document.querySelector("#fotoBesar img");
+    
+    if (popUp.style.display === "flex") {
+        gambarPopUp.classList.remove("aktif-pop");
+        gambarPopUp.src = daftarFoto[indeksFoto].src;
+        setTimeout(function(){
+            gambarPopUp.classList.add("aktif-pop");
+        }, 10);
+    }
 }
 
 function munculSurat(){
@@ -222,13 +247,17 @@ function munculSurat(){
 }
 
 function bukaFoto(jalurGambar){
-    document.querySelector("#fotoBesar img").src = jalurGambar;
+    let gambarPopUp = document.querySelector("#fotoBesar img");
+    gambarPopUp.src = jalurGambar;
+    gambarPopUp.classList.add("aktif-pop");
+    
     document.getElementById("fotoBesar").style.display = "flex";
     document.getElementById("laguLatar").play();
 }
 
 function tutupFoto(){
     document.getElementById("fotoBesar").style.display = "none";
+    document.querySelector("#fotoBesar img").classList.remove("aktif-pop");
     document.getElementById("laguLatar").pause();
 }
 </script>

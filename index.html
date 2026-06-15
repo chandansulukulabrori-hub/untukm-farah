@@ -14,7 +14,7 @@
     overflow-x: hidden;
     }
 
-/* Wadah utama slider foto */
+
 .slider-container {
     position: relative;
     max-width: 320px;
@@ -24,9 +24,9 @@
     justify-content: center;
 }
 
-/* Mengatur semua foto di dalam slider */
+
 .slider-foto {
-    display: none; /* Sembunyikan semua foto dulu */
+    display: none; 
     width: 250px;
     height: 330px;
     object-fit: cover;
@@ -36,7 +36,6 @@
     transition: 0.3s;
 }
 
-/* Hanya foto dengan class 'aktif' yang akan muncul */
 .slider-foto.aktif {
     display: block;
 }
@@ -45,7 +44,6 @@
     transform: scale(1.05);
 }
 
-/* Mengatur Tombol Panah Kanan dan Kiri agar Pas di PC & HP */
 .tombol-panah {
     position: absolute;
     background: rgba(255, 111, 165, 0.8);
@@ -68,7 +66,6 @@
 .kiri { left: 0; }
 .kanan { right: 0; }
 
-/* Judul dan Tombol Surat */
 h1, #tombol, #surat h3 {
     font-family: 'Pacifico', cursive;
     color:#ff4d88;
@@ -91,7 +88,6 @@ p{
     transition:1s;
 }   
 
-/* Animasi Hati */
 .hati{
     position:fixed;
     top:-20px;
@@ -112,7 +108,6 @@ p{
     to{ transform:rotate(360deg); }
 }
 
-/* Pop-up Foto Layar Penuh */
 #fotoBesar {
     display: none;
     position: fixed;

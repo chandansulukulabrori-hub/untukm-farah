@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Untuk Farah 🌻</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -19,6 +21,7 @@
     position: relative;
     max-width: 250px;
     margin: 20px auto;
+    touch-action: pan-y; /* biar swipe horizontal gak bentrok sama scroll vertikal */
 }
 
 /* Mengatur semua foto di dalam slider */
@@ -31,6 +34,8 @@
     box-shadow: 0 0 20px pink;
     cursor: pointer;
     transition: 0.3s;
+    -webkit-user-drag: none;
+    user-select: none;
 }
 
 /* Hanya foto dengan class 'aktif' yang akan muncul */
@@ -48,31 +53,34 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Mengatur Tombol Panah Global (Tetap pas di PC, HP, dan pas Zoom Gede) */
-.tombol-panah {
-    position: fixed; /* Diubah jadi fixed agar posisinya mengambang stabil di layar */
-    top: 50%; /* Tepat di tengah layar secara vertikal */
-    transform: translateY(-50%);
-    background: rgba(255, 111, 165, 0.85);
-    color: white;
-    border: none;
-    font-size: 24px;
-    padding: 12px 15px;
+/* Dot indicator */
+.dot-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000; /* Nilai super tinggi supaya muncul di atas overlay hitam pas diperbesar */
-    user-select: none;
-    transition: 0.2s;
+    background: #ffb3d1;
+    transition: 0.3s;
 }
 
-.tombol-panah:hover {
-    background: rgba(255, 111, 165, 1);
-    transform: translateY(-50%) scale(1.1);
+.dot.aktif {
+    background: #ff4d88;
+    transform: scale(1.3);
 }
 
-/* Jarak panah dari pinggir layar PC / HP */
-.kiri { left: 5%; }
-.kanan { right: 5%; }
+/* Petunjuk swipe kecil */
+.petunjuk-swipe {
+    font-size: 13px;
+    color: #ff88b3;
+    margin-top: 6px;
+    opacity: 0.8;
+}
 
 /* Judul dan Tombol Surat */
 h1, #tombol, #surat h3 {
@@ -129,7 +137,8 @@ p{
     background: rgba(0,0,0,0.85);
     z-index: 9999;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
+    touch-action: pan-y;
 }
 #fotoBesar img {
     display: none;
@@ -137,17 +146,13 @@ p{
     max-width: 450px;
     border-radius: 15px; 
     cursor: pointer;
+    -webkit-user-drag: none;
+    user-select: none;
 }
 
-/* Responsif buat HP (Biar panahnya gak terlalu mepet layar kecil) */
+/* Responsif buat HP */
 @media screen and (max-width: 480px) {
     body { padding: 20px; }
-    .tombol-panah {
-        font-size: 20px;
-        padding: 10px 13px;
-    }
-    .kiri { left: 2%; }
-    .kanan { right: 2%; }
 }
 </style>
 
@@ -156,17 +161,16 @@ p{
 <audio id="laguLatar" src="aboutyou.mp3" loop></audio>
 <h1>Hai Farah 🌻</h1>
 
-<button class="tombol-panah kiri" onclick="geserFoto(-1)">&#10094;</button>
-
-<div class="slider-container">
-    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto1.jpeg" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto2.jpeg" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto3.jpeg" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto4.jpeg" onclick="bukaFoto(this.src)">
+<div class="slider-container" id="sliderContainer">
+    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" alt="Foto kenangan 1" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto1.jpeg" alt="Foto kenangan 2" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto2.jpeg" alt="Foto kenangan 3" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto3.jpeg" alt="Foto kenangan 4" onclick="bukaFoto(this.src)">
+    <img class="slider-foto" src="foto4.jpeg" alt="Foto kenangan 5" onclick="bukaFoto(this.src)">
 </div>
 
-<button class="tombol-panah kanan" onclick="geserFoto(1)">&#10095;</button>
+<div class="dot-container" id="dotContainer"></div>
+<p class="petunjuk-swipe">← geser foto →</p>
 
 <p>Makasih ya udah hadir di hidupku ❤️</p>
 <p>Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
@@ -176,7 +180,7 @@ p{
 </button>
 
 <div id="fotoBesar" onclick="tutupFoto()">
-    <img src="">
+    <img src="" alt="Foto diperbesar">
 </div>
 
 <div id="surat">
@@ -188,9 +192,27 @@ p{
 
 <script>
 let indeksFoto = 0;
+const daftarFoto = document.getElementsByClassName("slider-foto");
+
+// Bikin dot indicator sesuai jumlah foto
+function buatDot() {
+    let dotContainer = document.getElementById("dotContainer");
+    for (let i = 0; i < daftarFoto.length; i++) {
+        let dot = document.createElement("div");
+        dot.className = "dot" + (i === 0 ? " aktif" : "");
+        dotContainer.appendChild(dot);
+    }
+}
+buatDot();
+
+function perbaruiDot() {
+    let semuaDot = document.querySelectorAll(".dot");
+    semuaDot.forEach(function(dot, i) {
+        dot.classList.toggle("aktif", i === indeksFoto);
+    });
+}
 
 function geserFoto(arah) {
-    let daftarFoto = document.getElementsByClassName("slider-foto");
     daftarFoto[indeksFoto].classList.remove("aktif");
     
     indeksFoto = indeksFoto + arah;
@@ -203,6 +225,7 @@ function geserFoto(arah) {
     }
     
     daftarFoto[indeksFoto].classList.add("aktif");
+    perbaruiDot();
     
     // Logika sinkronisasi: kalau foto besar lagi kebuka, ikut ganti gambarnya di dalam pop-up
     let popUp = document.getElementById("fotoBesar");
@@ -216,6 +239,32 @@ function geserFoto(arah) {
         }, 10);
     }
 }
+
+// ===== Fitur Swipe (touch gesture) =====
+function pasangSwipe(elemen, callbackGeser) {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const ambangBatas = 40; // jarak minimal geser (px) biar dianggap swipe
+
+    elemen.addEventListener("touchstart", function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    elemen.addEventListener("touchend", function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        let jarak = touchEndX - touchStartX;
+        if (Math.abs(jarak) > ambangBatas) {
+            if (jarak < 0) {
+                callbackGeser(1); // swipe ke kiri -> foto berikutnya
+            } else {
+                callbackGeser(-1); // swipe ke kanan -> foto sebelumnya
+            }
+        }
+    }, { passive: true });
+}
+
+pasangSwipe(document.getElementById("sliderContainer"), geserFoto);
+pasangSwipe(document.getElementById("fotoBesar"), geserFoto);
 
 function munculSurat(){
     let surat = document.getElementById("surat");
@@ -253,13 +302,22 @@ function bukaFoto(jalurGambar){
     gambarPopUp.classList.add("aktif-pop");
     
     document.getElementById("fotoBesar").style.display = "flex";
-    document.getElementById("laguLatar").play();
+
+    let audio = document.getElementById("laguLatar");
+    let janji = audio.play();
+    if (janji !== undefined) {
+        janji.catch(function() {
+            // Autoplay diblokir browser, gapapa dilanjut tanpa musik
+        });
+    }
 }
 
 function tutupFoto(){
     document.getElementById("fotoBesar").style.display = "none";
     document.querySelector("#fotoBesar img").classList.remove("aktif-pop");
-    document.getElementById("laguLatar").pause();
+    let audio = document.getElementById("laguLatar");
+    audio.pause();
+    audio.currentTime = 0;
 }
 </script>
 </body>

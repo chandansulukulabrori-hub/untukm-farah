@@ -294,21 +294,39 @@ p{
     100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
 }
 
-/* Pita dekoratif di pojok surat */
+/* Pita dekoratif di pojok surat. Tersembunyi dulu, baru muncul dengan pantulan
+   lembut lewat class "tampil" yang ditambahkan JS setelah buket selesai muncul. */
 .surat-pita {
     position: absolute;
     top: -14px;
     right: 18px;
     font-size: 30px;
-    transform: rotate(8deg);
+    transform: rotate(8deg) scale(0.4);
+    opacity: 0;
     filter: drop-shadow(0 3px 4px rgba(0,0,0,0.15));
+}
+.surat-pita.tampil {
+    animation: pitaMuncul 0.6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes pitaMuncul {
+    0%   { opacity: 0; transform: rotate(8deg) scale(0.4); }
+    60%  { opacity: 1; transform: rotate(8deg) scale(1.18); }
+    100% { opacity: 1; transform: rotate(8deg) scale(1); }
 }
 
 #surat h3 {
     margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+}
+#surat h3.tampil {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Isi surat: font hangat, dan tiap baris muncul satu-satu */
+/* Isi surat: font hangat, tiap baris disembunyikan dulu lalu dimunculkan
+   satu-satu lewat JS (class "tampil") supaya jaraknya bisa dikontrol presisi. */
 .baris-surat {
     font-family: 'Caveat', cursive;
     font-size: 24px;
@@ -319,20 +337,15 @@ p{
     margin: 4px 0;
     opacity: 0;
     transform: translateY(12px);
-    animation: munculBaris 0.7s ease forwards;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-
-.baris-surat:nth-of-type(1) { animation-delay: 0.5s; }
-.baris-surat:nth-of-type(2) { animation-delay: 1.1s; }
-.baris-surat:nth-of-type(3) { animation-delay: 1.7s; }
-.baris-surat:nth-of-type(4) { animation-delay: 2.1s; }
-
-@keyframes munculBaris {
-    to { opacity: 1; transform: translateY(0); }
+.baris-surat.tampil {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Buket tulip sebagai watermark halus di bagian bawah surat, di-clip lewat wadah terpisah
-   supaya tidak ikut memotong pita dekoratif di pojok surat */
+   supaya tidak ikut memotong pita dekoratif di pojok surat. Muncul belakangan lewat JS. */
 .surat-tanda-air-wrap {
     position: absolute;
     inset: 0;
@@ -345,9 +358,14 @@ p{
     position: absolute;
     left: 50%;
     bottom: -18px;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(12px) scale(0.97);
     width: 230px;
+    opacity: 0;
+    transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+}
+.surat-tanda-air.tampil {
     opacity: 0.16;
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 .surat-tanda-air svg {
     width: 100%;
@@ -531,6 +549,21 @@ p{
     margin-top: 8px;
     opacity: 0.85;
 }
+
+/* Hormati preferensi pengguna yang mematikan animasi */
+@media (prefers-reduced-motion: reduce) {
+    .amplop .flap,
+    .amplop-wrap,
+    #surat.muncul,
+    .surat-pita.tampil,
+    #surat h3,
+    .baris-surat,
+    .surat-tanda-air,
+    .svg-tangkai {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 </style>
 
 </head>
@@ -650,7 +683,7 @@ document.getElementById("laguLatar").addEventListener("ended", function() {
 });
 
 // ===== Gambar ilustrasi buket tulip (12 tangkai mengumpul dalam 1 buket) =====
-// Sekarang dipakai sebagai watermark halus di dalam surat, bukan sebagai elemen utama.
+// Dipakai sebagai watermark halus di dalam surat, dimunculkan belakangan lewat JS.
 function gambarBuketTulip() {
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("svgBuket");
@@ -921,39 +954,124 @@ function pasangSwipe(elemen, callbackGeser) {
 pasangSwipe(document.getElementById("sliderContainer"), geserFoto);
 pasangSwipe(document.getElementById("fotoBesar"), geserFoto);
 
-function munculSurat(){
+// ================================================================
+// ===== Sekuens sinematik pembukaan surat (dikontrol via JS) =====
+// ================================================================
+
+// Kecilkan promise timeout jadi 0 kalau pengguna minta motion minim,
+// biar sekuens tetap jalan (dan hati tetap muncul) tanpa animasi panjang.
+const gerakMinim = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function tunda(ms) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, gerakMinim ? 0 : ms);
+    });
+}
+
+// Menunggu satu event transitionend dari elemen tertentu, dengan fallback
+// timeout supaya sekuens tidak pernah macet kalau event tidak pernah terpicu
+// (misalnya elemen disembunyikan browser sebelum transisi selesai).
+function tungguTransisi(elemen, msFallback) {
+    if (gerakMinim) return Promise.resolve();
+    return new Promise(function(resolve) {
+        let selesai = false;
+        function beres(e) {
+            if (e && e.target !== elemen) return;
+            if (selesai) return;
+            selesai = true;
+            elemen.removeEventListener("transitionend", beres);
+            resolve();
+        }
+        elemen.addEventListener("transitionend", beres);
+        setTimeout(beres, msFallback);
+    });
+}
+
+// Sama seperti di atas tapi untuk animationend (dipakai buket keyframes, dsb).
+function tungguAnimasi(elemen, msFallback) {
+    if (gerakMinim) return Promise.resolve();
+    return new Promise(function(resolve) {
+        let selesai = false;
+        function beres(e) {
+            if (e && e.target !== elemen) return;
+            if (selesai) return;
+            selesai = true;
+            elemen.removeEventListener("animationend", beres);
+            resolve();
+        }
+        elemen.addEventListener("animationend", beres);
+        setTimeout(beres, msFallback);
+    });
+}
+
+async function munculSurat(){
     let amplop = document.getElementById("amplop");
     let amplopWrap = document.getElementById("amplopWrap");
     let amplopLabel = document.getElementById("amplopLabel");
     let surat = document.getElementById("surat");
+    let flap = amplop.querySelector(".flap");
+    let watermark = surat.querySelector(".surat-tanda-air");
+    let pita = surat.querySelector(".surat-pita");
+    let judul = surat.querySelector("h3");
+    let semuaBaris = surat.querySelectorAll(".baris-surat");
 
     if (amplop.classList.contains("terbuka")) return; // cegah diklik berkali-kali
 
+    // 1-2. Amplop diketuk, flap terbuka
     amplop.classList.add("terbuka");
     amplopLabel.textContent = "💌 Surat sudah dibuka";
 
-    setTimeout(function(){
-        amplopWrap.classList.add("tersembunyi");
-        surat.classList.add("muncul");
-    }, 950);
+    // 3. Tunggu animasi flap terbuka selesai sepenuhnya
+    await tungguTransisi(flap, 950);
 
-    setTimeout(function(){
-        amplopWrap.classList.add("tersembunyi-total");
-    }, 1400);
+    // 4. Pudarkan amplop lalu hilangkan dari alur halaman
+    amplopWrap.classList.add("tersembunyi");
+    await tungguTransisi(amplopWrap, 500);
+    amplopWrap.classList.add("tersembunyi-total");
 
-    setTimeout(function(){
-        for(let i=0;i<15;i++){
-            let hati = document.createElement("div");
-            hati.innerHTML = "❤️";
-            hati.className = "hati";
-            hati.style.left = Math.random()*100 + "vw";
-            hati.style.animationDuration = (Math.random()*3 + 2) + "s";
-            document.body.appendChild(hati);
-            setTimeout(function() {
-                hati.remove();
-            }, 5000);
-        }
-    }, 1000);
+    // 5. Surat meluncur naik seolah keluar dari amplop, dengan efek per (spring)
+    surat.classList.add("muncul");
+    await tungguAnimasi(surat, 900);
+
+    // 6. Buket watermark muncul dari bawah secara halus
+    watermark.classList.add("tampil");
+    await tungguTransisi(watermark, 1000);
+
+    // 7. Pita di pojok surat muncul dengan sedikit pantulan
+    pita.classList.add("tampil");
+    await tungguAnimasi(pita, 650);
+
+    // 8. Judul surat muncul
+    judul.classList.add("tampil");
+    await tungguTransisi(judul, 600);
+
+    // 9. Setiap baris surat (termasuk hati penutup) muncul satu-satu
+    for (let i = 0; i < semuaBaris.length; i++) {
+        let baris = semuaBaris[i];
+        baris.classList.add("tampil");
+        await tungguTransisi(baris, 650);
+        await tunda(550); // jeda antar baris sekitar 500-700ms
+    }
+
+    // 10-11. Baru sekarang, setelah semua elemen selesai muncul, hujan hati dimulai
+    mulaiHatiJatuh();
+}
+
+// Hujan hati kecil sebagai penutup sekuens, dipisah jadi fungsi sendiri
+// supaya hanya berjalan setelah seluruh reveal surat benar-benar selesai.
+function mulaiHatiJatuh() {
+    let jumlahHati = gerakMinim ? 0 : 15;
+    for (let i = 0; i < jumlahHati; i++) {
+        let hati = document.createElement("div");
+        hati.innerHTML = "❤️";
+        hati.className = "hati";
+        hati.style.left = Math.random() * 100 + "vw";
+        hati.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        document.body.appendChild(hati);
+        setTimeout(function() {
+            hati.remove();
+        }, 5000);
+    }
 }
 
 function bukaFoto(jalurGambar){

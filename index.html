@@ -16,6 +16,88 @@
     overflow-x: hidden;
     }
 
+/* ===== Mini Music Player ===== */
+.player-wrap {
+    max-width: 300px;
+    margin: 18px auto 8px;
+    background: linear-gradient(135deg, #ffffff, #fff5f9);
+    border-radius: 18px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(255,77,136,0.18);
+    border: 1.5px solid #ffd6e8;
+}
+.player-tombol {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, #ff8fbe, #ff4d88);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255,77,136,0.35);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s ease;
+}
+.player-tombol:active { transform: scale(0.92); }
+.player-tombol svg { width: 18px; height: 18px; fill: white; }
+
+.player-info {
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+}
+.player-judul {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #d6336c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.player-artis {
+    font-size: 12px;
+    color: #ff88b3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+/* Equalizer kecil, aktif cuma pas lagu diputar */
+.player-eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.player-eq span {
+    display: block;
+    width: 3px;
+    background: #ff4d88;
+    border-radius: 2px;
+    height: 4px;
+    animation: none;
+}
+.player-eq.aktif span {
+    animation: eqGoyang 0.9s ease-in-out infinite;
+}
+.player-eq span:nth-child(1) { animation-delay: 0s; }
+.player-eq span:nth-child(2) { animation-delay: 0.2s; }
+.player-eq span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes eqGoyang {
+    0%, 100% { height: 4px; }
+    50% { height: 15px; }
+}
+
 /* Wadah utama slider foto */
 .slider-container {
     position: relative;
@@ -53,12 +135,25 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Dot indicator */
+/* Dot indicator, sekarang bisa diklik dengan tap target lebih besar */
 .dot-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
     margin-top: 12px;
+}
+
+.dot-tap {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    background: none;
+    padding: 0;
 }
 
 .dot {
@@ -264,7 +359,8 @@ p{
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh; /* fallback biar gak keganggu address bar Safari iOS yang collapse/expand */
     background: rgba(0,0,0,0.85);
     z-index: 9999;
     justify-content: center;
@@ -427,7 +523,7 @@ p{
 
 </head>
 <body>
-<audio id="laguLatar" src="aboutyou.mp3" loop></audio>
+<audio id="laguLatar" src="aboutyou.mp3" preload="metadata"></audio>
 
 <div class="kado-bingkai">
     <div class="pita-atas">
@@ -440,12 +536,27 @@ p{
 
     <h1>Hai Farah 🌷</h1>
 
+    <!-- ===== Mini Music Player ===== -->
+    <div class="player-wrap">
+        <button class="player-tombol" id="tombolMusik" onclick="toggleMusik()" aria-label="Putar atau jeda lagu">
+            <svg id="ikonPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="ikonPause" viewBox="0 0 24 24" style="display:none;"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <div class="player-info">
+            <div class="player-judul" id="judulLagu">About You</div>
+            <div class="player-artis" id="artisLagu">The 1975</div>
+        </div>
+        <div class="player-eq" id="playerEq">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
     <div class="slider-container" id="sliderContainer">
-    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" alt="Foto kenangan 1" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto1.jpeg" alt="Foto kenangan 2" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto2.jpeg" alt="Foto kenangan 3" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto3.jpeg" alt="Foto kenangan 4" onclick="bukaFoto(this.src)">
-    <img class="slider-foto" src="foto4.jpeg" alt="Foto kenangan 5" onclick="bukaFoto(this.src)">
+    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" alt="Foto kenangan 1" onclick="bukaFoto(this.src)" loading="lazy">
+    <img class="slider-foto" src="foto1.jpeg" alt="Foto kenangan 2" onclick="bukaFoto(this.src)" loading="lazy">
+    <img class="slider-foto" src="foto2.jpeg" alt="Foto kenangan 3" onclick="bukaFoto(this.src)" loading="lazy">
+    <img class="slider-foto" src="foto3.jpeg" alt="Foto kenangan 4" onclick="bukaFoto(this.src)" loading="lazy">
+    <img class="slider-foto" src="foto4.jpeg" alt="Foto kenangan 5" onclick="bukaFoto(this.src)" loading="lazy">
 </div>
 
 <div class="dot-container" id="dotContainer"></div>
@@ -489,6 +600,42 @@ p{
 </div>
 
 <script>
+// ===== Mini Music Player =====
+function toggleMusik() {
+    let audio = document.getElementById("laguLatar");
+    let ikonPlay = document.getElementById("ikonPlay");
+    let ikonPause = document.getElementById("ikonPause");
+    let eq = document.getElementById("playerEq");
+
+    if (audio.paused) {
+        // Dipanggil langsung di dalam event handler klik (bukan lewat setTimeout/promise
+        // tertunda), supaya iOS Safari menganggap ini sebagai user-gesture yang sah
+        // dan tidak memblokir autoplay-nya.
+        let janji = audio.play();
+        if (janji !== undefined) {
+            janji.then(function() {
+                ikonPlay.style.display = "none";
+                ikonPause.style.display = "block";
+                eq.classList.add("aktif");
+            }).catch(function() {
+                // Kalau tetap gagal (jarang terjadi karena ini sudah lewat tap user),
+                // biarkan tombol tetap di posisi "play" biar user bisa coba lagi.
+            });
+        }
+    } else {
+        audio.pause();
+        ikonPlay.style.display = "block";
+        ikonPause.style.display = "none";
+        eq.classList.remove("aktif");
+    }
+}
+
+document.getElementById("laguLatar").addEventListener("ended", function() {
+    document.getElementById("ikonPlay").style.display = "block";
+    document.getElementById("ikonPause").style.display = "none";
+    document.getElementById("playerEq").classList.remove("aktif");
+});
+
 // ===== Gambar ilustrasi buket tulip (12 tangkai mengumpul dalam 1 buket) =====
 function gambarBuketTulip() {
     const svgNS = "http://www.w3.org/2000/svg";
@@ -499,21 +646,13 @@ function gambarBuketTulip() {
     const jumlahTulip = 12;
     const warnaUjung = ["#ff6fa5","#ff85b3","#ff5c9a","#ff9dc4","#ff77ad","#ffa6cc"];
 
-    // 4 tahap mekar, semuanya tetap bentuk CUP/TEROMPET khas tulip (bukan bintang mekar penuh kayak mawar).
-    // Bedanya cuma seberapa lebar & seberapa "renggang" ujung kelopaknya, persis kayak tulip asli di foto referensi.
-    // path digambar dengan titik tangkai (pangkal) di (0,0), tumbuh ke atas (arah -y)
     const bentukTahap = [
-        // 0. kuncup: oval rapat, ujung meruncing, sama sekali belum kelihatan belahan kelopak
         { d: "M-5,0 C-6.5,-6 -5.5,-13 0,-16.5 C5.5,-13 6.5,-6 5,0 C5,1.6 -5,1.6 -5,0 Z", skala: 1 },
-        // 1. mulai terbuka: oval sedikit lebih besar & membulat di atas, baru ada hint 3 ujung kelopak yg halus
         { d: "M-6,0 C-7.5,-7 -6.5,-14 -3,-17.5 C-1.5,-19 1.5,-19 3,-17.5 C6.5,-14 7.5,-7 6,0 C6,1.8 -6,1.8 -6,0 Z", skala: 1 },
-        // 2. mekar sebagian: cup klasik, 3 ujung kelopak mulai kelihatan jelas & renggang dikit di puncak
         { d: "M-7,0 C-8.5,-7 -8,-11.5 -7,-13.5 C-6,-15.5 -4,-15 -3,-14.5 C-2.3,-16.8 -1,-19 0,-19 C1,-19 2.3,-16.8 3,-14.5 C4,-15 6,-15.5 7,-13.5 C8,-11.5 8.5,-7 7,0 C7,1.8 -7,1.8 -7,0 Z", skala: 1 },
-        // 3. mekar sempurna: cup lebih lebar & ujung kelopak melengkung terbuka keluar (reflex), tapi tetap pangkalnya menguncup jadi cup
         { d: "M-7.5,0 C-9,-6.5 -9.5,-9.5 -10.5,-11.8 C-11.3,-13.6 -9.3,-14.4 -7.3,-13 C-5.6,-15 -3.6,-16.3 -2.3,-12.6 C-1.4,-15.6 -1,-18 0,-18 C1,-18 1.4,-15.6 2.3,-12.6 C3.6,-16.3 5.6,-15 7.3,-13 C9.3,-14.4 11.3,-13.6 10.5,-11.8 C9.5,-9.5 9,-6.5 7.5,0 C7.5,1.8 -7.5,1.8 -7.5,0 Z", skala: 1 }
     ];
     const skalaTahap = [0.72, 0.88, 1.05, 1.22];
-    // urutan tahap dicampur biar variatif: kuncup, mulai terbuka, mekar sebagian, mekar sempurna
     const urutanTahap = [0, 2, 1, 3, 2, 0, 3, 1, 2, 3, 0, 2];
 
     function buatPath(d, fill, stroke) {
@@ -527,7 +666,6 @@ function gambarBuketTulip() {
     let defs = document.createElementNS(svgNS, "defs");
     svg.appendChild(defs);
 
-    // --- Daun-daun panjang di sekitar ikatan buket ---
     const daunPaths = [
         "M150,300 C110,280 70,240 60,180 C90,220 120,250 150,300 Z",
         "M150,300 C190,280 230,240 240,180 C210,220 180,250 150,300 Z",
@@ -540,12 +678,10 @@ function gambarBuketTulip() {
         svg.appendChild(daun);
     });
 
-    // --- 12 tangkai + kepala tulip, mengumpul jadi satu buket (fan shape) ---
     const grupTangkai = document.createElementNS(svgNS, "g");
     for (let i = 0; i < jumlahTulip; i++) {
-        // sudut menyebar dari -50deg s/d 50deg supaya bentuknya kayak buket digenggam
         let sudutDeg = -50 + (100 / (jumlahTulip - 1)) * i;
-        let jitter = (Math.sin(i * 12.9) * 4); // variasi kecil biar natural, bukan simetris kaku
+        let jitter = (Math.sin(i * 12.9) * 4);
         sudutDeg += jitter;
         let sudutRad = (sudutDeg - 90) * Math.PI / 180;
 
@@ -553,7 +689,6 @@ function gambarBuketTulip() {
         let kepalaX = titikTemu.x + Math.cos(sudutRad) * panjang;
         let kepalaY = titikTemu.y + Math.sin(sudutRad) * panjang;
 
-        // tangkai melengkung lembut (bezier)
         let kontrolX = titikTemu.x + Math.cos(sudutRad) * (panjang * 0.5) + (sudutDeg * 0.4);
         let kontrolY = titikTemu.y + Math.sin(sudutRad) * (panjang * 0.5);
 
@@ -569,7 +704,6 @@ function gambarBuketTulip() {
         tangkai.setAttribute("fill", "none");
         g.appendChild(tangkai);
 
-        // kepala tulip: tahap mekar bervariasi (tetap bentuk cup khas tulip) + gradasi putih (pangkal) ke pink (ujung)
         let tahap = urutanTahap[i % urutanTahap.length];
         let bentuk = bentukTahap[tahap];
         let skala = skalaTahap[tahap];
@@ -598,7 +732,6 @@ function gambarBuketTulip() {
         tulipUtama.setAttribute("stroke-width", "0.3");
         kepala.appendChild(tulipUtama);
 
-        // garis lipatan kelopak tengah biar kelihatan bervolume kayak tulip asli (bukan blob rata)
         let lipatan = document.createElementNS(svgNS, "path");
         lipatan.setAttribute("d", "M0,-1 C-1.2,-8 -0.5,-13 0,-15.5");
         lipatan.setAttribute("stroke", "#ffffffaa");
@@ -612,7 +745,6 @@ function gambarBuketTulip() {
     }
     svg.appendChild(grupTangkai);
 
-    // --- Tali pengikat buket ---
     let tali = buatPath(
         "M120," + (titikTemu.y - 6) + " Q150," + (titikTemu.y + 10) + " 180," + (titikTemu.y - 6),
         "none", "#ff4d88"
@@ -622,7 +754,6 @@ function gambarBuketTulip() {
     tali.setAttribute("stroke-linecap", "round");
     svg.appendChild(tali);
 
-    // --- Kertas pembungkus (kerucut) di bawah ikatan ---
     let pembungkus = buatPath(
         "M100," + titikTemu.y + " L150,375 L200," + titikTemu.y + " Z",
         "#fff3f7", "#ffc2dd"
@@ -661,7 +792,6 @@ function preloadGambar() {
             imgAsli.classList.add("gagal-muat");
             imgAsli.alt = "Foto tidak ditemukan: " + namaFileAsli;
             imgAsli.setAttribute("data-src-asli", namaFileAsli);
-            // Ganti ke placeholder SVG biar gak nampilin ikon broken-image bawaan browser
             imgAsli.src = "data:image/svg+xml;utf8," + encodeURIComponent(
                 '<svg xmlns="http://www.w3.org/2000/svg" width="250" height="330">' +
                 '<rect width="100%" height="100%" fill="#ffd6e8"/>' +
@@ -685,13 +815,22 @@ function preloadGambar() {
 }
 preloadGambar();
 
-// Bikin dot indicator sesuai jumlah foto
+// Bikin dot indicator sesuai jumlah foto, sekarang bisa diklik buat lompat langsung
 function buatDot() {
     let dotContainer = document.getElementById("dotContainer");
     for (let i = 0; i < daftarFoto.length; i++) {
+        let tombolDot = document.createElement("button");
+        tombolDot.className = "dot-tap";
+        tombolDot.setAttribute("aria-label", "Lihat foto " + (i + 1));
+        tombolDot.onclick = (function(indeks) {
+            return function() { lompatKeFoto(indeks); };
+        })(i);
+
         let dot = document.createElement("div");
         dot.className = "dot" + (i === 0 ? " aktif" : "");
-        dotContainer.appendChild(dot);
+        tombolDot.appendChild(dot);
+
+        dotContainer.appendChild(tombolDot);
     }
 }
 buatDot();
@@ -703,25 +842,13 @@ function perbaruiDot() {
     });
 }
 
-function geserFoto(arah) {
-    daftarFoto[indeksFoto].classList.remove("aktif");
-    
-    indeksFoto = indeksFoto + arah;
-    
-    if (indeksFoto >= daftarFoto.length) {
-        indeksFoto = 0;
-    }
-    if (indeksFoto < 0) {
-        indeksFoto = daftarFoto.length - 1;
-    }
-    
+function tampilkanFotoAktif() {
     daftarFoto[indeksFoto].classList.add("aktif");
     perbaruiDot();
-    
-    // Logika sinkronisasi: kalau foto besar lagi kebuka, ikut ganti gambarnya di dalam pop-up
+
     let popUp = document.getElementById("fotoBesar");
     let gambarPopUp = document.querySelector("#fotoBesar img");
-    
+
     if (popUp.style.display === "flex") {
         gambarPopUp.classList.remove("aktif-pop");
         gambarPopUp.src = daftarFoto[indeksFoto].src;
@@ -729,6 +856,29 @@ function geserFoto(arah) {
             gambarPopUp.classList.add("aktif-pop");
         }, 10);
     }
+}
+
+function geserFoto(arah) {
+    daftarFoto[indeksFoto].classList.remove("aktif");
+
+    indeksFoto = indeksFoto + arah;
+
+    if (indeksFoto >= daftarFoto.length) {
+        indeksFoto = 0;
+    }
+    if (indeksFoto < 0) {
+        indeksFoto = daftarFoto.length - 1;
+    }
+
+    tampilkanFotoAktif();
+}
+
+// Lompat langsung ke foto tertentu lewat klik dot
+function lompatKeFoto(indeksTujuan) {
+    if (indeksTujuan === indeksFoto) return;
+    daftarFoto[indeksFoto].classList.remove("aktif");
+    indeksFoto = indeksTujuan;
+    tampilkanFotoAktif();
 }
 
 // ===== Fitur Swipe (touch gesture) =====
@@ -765,23 +915,18 @@ function munculSurat(){
 
     if (amplop.classList.contains("terbuka")) return; // cegah diklik berkali-kali
 
-    // 1. Flap amplop terbuka perlahan (0.9 detik, smooth tanpa "mantul")
     amplop.classList.add("terbuka");
     amplopLabel.textContent = "💌 Surat sudah dibuka";
 
-    // 2. Setelah flap kebuka penuh, amplop baru memudar & suratnya muncul dengan animasi pop
     setTimeout(function(){
         amplopWrap.classList.add("tersembunyi");
         surat.classList.add("muncul");
     }, 950);
 
-    // 3. Setelah amplop selesai memudar, benar-benar disembunyikan (display:none)
-    //    biar ruang kosongnya kolaps dan jarak ke surat nggak jadi renggang
     setTimeout(function(){
         amplopWrap.classList.add("tersembunyi-total");
     }, 1400);
 
-    // 4. Hujan hati muncul begitu suratnya kelihatan
     setTimeout(function(){
         for(let i=0;i<15;i++){
             let hati = document.createElement("div");
@@ -806,24 +951,13 @@ function bukaFoto(jalurGambar){
     gambarPopUp.src = jalurGambar;
     gambarPopUp.classList.remove("gagal-muat");
     gambarPopUp.classList.add("aktif-pop");
-    
-    document.getElementById("fotoBesar").style.display = "flex";
 
-    let audio = document.getElementById("laguLatar");
-    let janji = audio.play();
-    if (janji !== undefined) {
-        janji.catch(function() {
-            // Autoplay diblokir browser, gapapa dilanjut tanpa musik
-        });
-    }
+    document.getElementById("fotoBesar").style.display = "flex";
 }
 
 function tutupFoto(){
     document.getElementById("fotoBesar").style.display = "none";
     document.querySelector("#fotoBesar img").classList.remove("aktif-pop");
-    let audio = document.getElementById("laguLatar");
-    audio.pause();
-    audio.currentTime = 0;
 }
 </script>
 </body>

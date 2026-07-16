@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Untuk Farah 🌻</title>
+<title>Untuk Farah 🌷</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Caveat:wght@500;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
     body{
@@ -312,6 +312,32 @@ p{
     margin-top: 8px;
     opacity: 0.85;
 }
+
+/* Buket tulip dekoratif (ilustrasi SVG, 12 tangkai mengumpul jadi satu buket) */
+.buket-wrap {
+    margin: 18px auto 4px;
+    max-width: 280px;
+}
+#svgBuket {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 6px 10px rgba(255,77,136,0.18));
+}
+.svg-tangkai {
+    animation: goyangTangkai 3.5s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+@keyframes goyangTangkai {
+    0%, 100% { transform: rotate(-1.2deg); }
+    50% { transform: rotate(1.2deg); }
+}
+.caption-buket {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: #b8446b;
+    margin-top: 4px;
+}
 </style>
 
 </head>
@@ -325,9 +351,9 @@ p{
         <div class="sayap kanan"></div>
         <div class="simpul"></div>
     </div>
-    <div class="tag-gantung">🌻 Untuk Farah</div>
+    <div class="tag-gantung">🌷 Untuk Farah</div>
 
-    <h1>Hai Farah 🌻</h1>
+    <h1>Hai Farah 🌷</h1>
 
     <div class="slider-container" id="sliderContainer">
     <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" alt="Foto kenangan 1" onclick="bukaFoto(this.src)">
@@ -341,6 +367,11 @@ p{
 <p class="petunjuk-swipe">← geser foto →</p>
 <p class="status-muat" id="statusMuat" style="display:none;"></p>
 
+<div class="buket-wrap">
+    <svg id="svgBuket" viewBox="0 0 300 380" aria-hidden="true"></svg>
+</div>
+<p class="caption-buket">1 buket tulip pink, 12 tangkai 🌷</p>
+
 <p class="pesan-utama">Makasih ya udah hadir di hidupku ❤️</p>
 <p class="pesan-utama kedua">Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
 
@@ -349,7 +380,7 @@ p{
 </button>
 
     <div id="surat">
-    <h3>Hai Farah 🌻</h3>
+    <h3>Hai Farah 🌷</h3>
     <p class="baris-surat">Semoga hari-harimu selalu dipenuhi hal baik, dan semoga aku bisa jadi salah satu alasan kamu tersenyum.</p>
     <p class="baris-surat">❤️</p>
     </div>
@@ -360,6 +391,152 @@ p{
 </div>
 
 <script>
+// ===== Gambar ilustrasi buket tulip (12 tangkai mengumpul dalam 1 buket) =====
+function gambarBuketTulip() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.getElementById("svgBuket");
+    if (!svg) return;
+
+    const titikTemu = { x: 150, y: 300 }; // titik ikatan buket (semua tangkai mengumpul di sini)
+    const jumlahTulip = 12;
+    const warnaUjung = ["#ff6fa5","#ff85b3","#ff5c9a","#ff9dc4","#ff77ad","#ffa6cc"];
+
+    // 4 tahap mekar, semuanya tetap bentuk CUP/TEROMPET khas tulip (bukan bintang mekar penuh kayak mawar).
+    // Bedanya cuma seberapa lebar & seberapa "renggang" ujung kelopaknya, persis kayak tulip asli di foto referensi.
+    // path digambar dengan titik tangkai (pangkal) di (0,0), tumbuh ke atas (arah -y)
+    const bentukTahap = [
+        // 0. kuncup: oval rapat, ujung meruncing, sama sekali belum kelihatan belahan kelopak
+        { d: "M-5,0 C-6.5,-6 -5.5,-13 0,-16.5 C5.5,-13 6.5,-6 5,0 C5,1.6 -5,1.6 -5,0 Z", skala: 1 },
+        // 1. mulai terbuka: oval sedikit lebih besar & membulat di atas, baru ada hint 3 ujung kelopak yg halus
+        { d: "M-6,0 C-7.5,-7 -6.5,-14 -3,-17.5 C-1.5,-19 1.5,-19 3,-17.5 C6.5,-14 7.5,-7 6,0 C6,1.8 -6,1.8 -6,0 Z", skala: 1 },
+        // 2. mekar sebagian: cup klasik, 3 ujung kelopak mulai kelihatan jelas & renggang dikit di puncak
+        { d: "M-7,0 C-8.5,-7 -8,-11.5 -7,-13.5 C-6,-15.5 -4,-15 -3,-14.5 C-2.3,-16.8 -1,-19 0,-19 C1,-19 2.3,-16.8 3,-14.5 C4,-15 6,-15.5 7,-13.5 C8,-11.5 8.5,-7 7,0 C7,1.8 -7,1.8 -7,0 Z", skala: 1 },
+        // 3. mekar sempurna: cup lebih lebar & ujung kelopak melengkung terbuka keluar (reflex), tapi tetap pangkalnya menguncup jadi cup
+        { d: "M-7.5,0 C-9,-6.5 -9.5,-9.5 -10.5,-11.8 C-11.3,-13.6 -9.3,-14.4 -7.3,-13 C-5.6,-15 -3.6,-16.3 -2.3,-12.6 C-1.4,-15.6 -1,-18 0,-18 C1,-18 1.4,-15.6 2.3,-12.6 C3.6,-16.3 5.6,-15 7.3,-13 C9.3,-14.4 11.3,-13.6 10.5,-11.8 C9.5,-9.5 9,-6.5 7.5,0 C7.5,1.8 -7.5,1.8 -7.5,0 Z", skala: 1 }
+    ];
+    const skalaTahap = [0.72, 0.88, 1.05, 1.22];
+    // urutan tahap dicampur biar variatif: kuncup, mulai terbuka, mekar sebagian, mekar sempurna
+    const urutanTahap = [0, 2, 1, 3, 2, 0, 3, 1, 2, 3, 0, 2];
+
+    function buatPath(d, fill, stroke) {
+        let p = document.createElementNS(svgNS, "path");
+        p.setAttribute("d", d);
+        if (fill) p.setAttribute("fill", fill);
+        if (stroke) { p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", "1"); }
+        return p;
+    }
+
+    let defs = document.createElementNS(svgNS, "defs");
+    svg.appendChild(defs);
+
+    // --- Daun-daun panjang di sekitar ikatan buket ---
+    const daunPaths = [
+        "M150,300 C110,280 70,240 60,180 C90,220 120,250 150,300 Z",
+        "M150,300 C190,280 230,240 240,180 C210,220 180,250 150,300 Z",
+        "M150,300 C130,270 110,220 115,160 C140,200 155,250 150,300 Z",
+        "M150,300 C170,270 190,220 185,160 C160,200 145,250 150,300 Z"
+    ];
+    daunPaths.forEach(function(d, i){
+        let daun = buatPath(d, i % 2 === 0 ? "#5fae7c" : "#4f9c6c");
+        daun.setAttribute("opacity", "0.95");
+        svg.appendChild(daun);
+    });
+
+    // --- 12 tangkai + kepala tulip, mengumpul jadi satu buket (fan shape) ---
+    const grupTangkai = document.createElementNS(svgNS, "g");
+    for (let i = 0; i < jumlahTulip; i++) {
+        // sudut menyebar dari -50deg s/d 50deg supaya bentuknya kayak buket digenggam
+        let sudutDeg = -50 + (100 / (jumlahTulip - 1)) * i;
+        let jitter = (Math.sin(i * 12.9) * 4); // variasi kecil biar natural, bukan simetris kaku
+        sudutDeg += jitter;
+        let sudutRad = (sudutDeg - 90) * Math.PI / 180;
+
+        let panjang = 155 + (i % 3) * 12 + Math.abs(Math.sin(i * 3.1)) * 10;
+        let kepalaX = titikTemu.x + Math.cos(sudutRad) * panjang;
+        let kepalaY = titikTemu.y + Math.sin(sudutRad) * panjang;
+
+        // tangkai melengkung lembut (bezier)
+        let kontrolX = titikTemu.x + Math.cos(sudutRad) * (panjang * 0.5) + (sudutDeg * 0.4);
+        let kontrolY = titikTemu.y + Math.sin(sudutRad) * (panjang * 0.5);
+
+        let g = document.createElementNS(svgNS, "g");
+        g.setAttribute("class", "svg-tangkai");
+        g.style.animationDelay = (i * 0.15) + "s";
+
+        let tangkai = buatPath(
+            "M" + titikTemu.x + "," + titikTemu.y + " Q" + kontrolX + "," + kontrolY + " " + kepalaX + "," + kepalaY,
+            "none", "#4f9c6c"
+        );
+        tangkai.setAttribute("stroke-width", "3.5");
+        tangkai.setAttribute("fill", "none");
+        g.appendChild(tangkai);
+
+        // kepala tulip: tahap mekar bervariasi (tetap bentuk cup khas tulip) + gradasi putih (pangkal) ke pink (ujung)
+        let tahap = urutanTahap[i % urutanTahap.length];
+        let bentuk = bentukTahap[tahap];
+        let skala = skalaTahap[tahap];
+        let warnaUjungIni = warnaUjung[i % warnaUjung.length];
+
+        let gradId = "gradTulip" + i;
+        let grad = document.createElementNS(svgNS, "linearGradient");
+        grad.setAttribute("id", gradId);
+        grad.setAttribute("x1", "0"); grad.setAttribute("y1", "1");
+        grad.setAttribute("x2", "0"); grad.setAttribute("y2", "0");
+        let stop1 = document.createElementNS(svgNS, "stop");
+        stop1.setAttribute("offset", "0%"); stop1.setAttribute("stop-color", "#ffffff");
+        let stop2 = document.createElementNS(svgNS, "stop");
+        stop2.setAttribute("offset", "50%"); stop2.setAttribute("stop-color", "#ffd3e4");
+        let stop3 = document.createElementNS(svgNS, "stop");
+        stop3.setAttribute("offset", "100%"); stop3.setAttribute("stop-color", warnaUjungIni);
+        grad.appendChild(stop1); grad.appendChild(stop2); grad.appendChild(stop3);
+        defs.appendChild(grad);
+
+        let kepala = document.createElementNS(svgNS, "g");
+        kepala.setAttribute("transform",
+            "translate(" + kepalaX + "," + kepalaY + ") rotate(" + sudutDeg + ") scale(" + skala + ")"
+        );
+
+        let tulipUtama = buatPath(bentuk.d, "url(#" + gradId + ")", "#fff0f5");
+        tulipUtama.setAttribute("stroke-width", "0.3");
+        kepala.appendChild(tulipUtama);
+
+        // garis lipatan kelopak tengah biar kelihatan bervolume kayak tulip asli (bukan blob rata)
+        let lipatan = document.createElementNS(svgNS, "path");
+        lipatan.setAttribute("d", "M0,-1 C-1.2,-8 -0.5,-13 0,-15.5");
+        lipatan.setAttribute("stroke", "#ffffffaa");
+        lipatan.setAttribute("stroke-width", "0.5");
+        lipatan.setAttribute("fill", "none");
+        kepala.appendChild(lipatan);
+
+        g.appendChild(kepala);
+
+        grupTangkai.appendChild(g);
+    }
+    svg.appendChild(grupTangkai);
+
+    // --- Tali pengikat buket ---
+    let tali = buatPath(
+        "M120," + (titikTemu.y - 6) + " Q150," + (titikTemu.y + 10) + " 180," + (titikTemu.y - 6),
+        "none", "#ff4d88"
+    );
+    tali.setAttribute("stroke-width", "5");
+    tali.setAttribute("fill", "none");
+    tali.setAttribute("stroke-linecap", "round");
+    svg.appendChild(tali);
+
+    // --- Kertas pembungkus (kerucut) di bawah ikatan ---
+    let pembungkus = buatPath(
+        "M100," + titikTemu.y + " L150,375 L200," + titikTemu.y + " Z",
+        "#fff3f7", "#ffc2dd"
+    );
+    svg.appendChild(pembungkus);
+    let garisPembungkus1 = buatPath("M120," + titikTemu.y + " L150,370", "none", "#ffd6e8");
+    let garisPembungkus2 = buatPath("M180," + titikTemu.y + " L150,370", "none", "#ffd6e8");
+    svg.appendChild(garisPembungkus1);
+    svg.appendChild(garisPembungkus2);
+}
+gambarBuketTulip();
+
 let indeksFoto = 0;
 const daftarFoto = document.getElementsByClassName("slider-foto");
 

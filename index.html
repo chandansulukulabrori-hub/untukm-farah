@@ -83,7 +83,7 @@
 }
 
 /* Judul dan Tombol Surat */
-h1, #tombol, #surat h3 {
+h1, #surat h3 {
     font-family: 'Pacifico', cursive;
     color:#ff4d88;
 }
@@ -109,6 +109,91 @@ p{
     color: #b8446b;
 }
 
+/* ===== Amplop (tombol buka surat) ===== */
+.amplop-wrap {
+    margin: 22px auto 0;
+    width: 130px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.amplop-wrap.tersembunyi {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+    pointer-events: none;
+}
+.amplop {
+    position: relative;
+    width: 130px;
+    height: 85px;
+    margin: 0 auto;
+    cursor: pointer;
+    perspective: 700px;
+    transition: transform 0.2s ease;
+}
+.amplop:hover { transform: translateY(-2px); }
+.amplop:active { transform: scale(0.95); }
+.amplop .badan {
+    position: absolute;
+    left: 0; top: 14px; width: 100%; height: 71px;
+    background: linear-gradient(160deg, #ff8fbe, #ff6fa5);
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(255,77,136,0.35);
+    overflow: hidden;
+}
+.amplop .badan::before,
+.amplop .badan::after {
+    content: "";
+    position: absolute; bottom: 0; width: 0; height: 0;
+    border-style: solid;
+}
+.amplop .badan::before {
+    left: 0;
+    border-width: 0 0 40px 65px;
+    border-color: transparent transparent rgba(255,255,255,0.2) transparent;
+}
+.amplop .badan::after {
+    right: 0;
+    border-width: 0 65px 40px 0;
+    border-color: transparent transparent rgba(255,255,255,0.2) transparent;
+}
+.amplop .flap {
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 48px;
+    background: linear-gradient(160deg, #ffa6d1, #ff6fa5);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    transition: transform 0.6s cubic-bezier(.45,-0.3,.2,1.3);
+    z-index: 4;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.amplop.terbuka .flap {
+    transform: rotateX(180deg);
+}
+.amplop .segel {
+    position: absolute;
+    left: 50%; top: 32px;
+    width: 28px; height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, 0) scale(1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    z-index: 5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.amplop.terbuka .segel {
+    opacity: 0;
+    transform: translate(-50%, -6px) scale(0.4);
+}
+.amplop-label {
+    font-family: 'Pacifico', cursive;
+    color: #ff4d88;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
 #surat{
     display:none;
     margin-top:20px;
@@ -117,7 +202,17 @@ p{
     border-radius:15px;
     box-shadow:0 0 15px rgba(0,0,0,0.1);
     text-align:left;
-}   
+    transform-origin: top center;
+}
+#surat.muncul {
+    display: block;
+    animation: suratMuncul 0.75s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes suratMuncul {
+    0%   { opacity: 0; transform: translateY(35px) scale(0.8) rotate(-3deg); }
+    55%  { opacity: 1; transform: translateY(-6px) scale(1.03) rotate(1deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
 
 #surat h3 {
     margin-bottom: 14px;
@@ -136,10 +231,10 @@ p{
     animation: munculBaris 0.7s ease forwards;
 }
 
-.baris-surat:nth-of-type(1) { animation-delay: 0.2s; }
-.baris-surat:nth-of-type(2) { animation-delay: 1s; }
-.baris-surat:nth-of-type(3) { animation-delay: 1.9s; }
-.baris-surat:nth-of-type(4) { animation-delay: 2.6s; }
+.baris-surat:nth-of-type(1) { animation-delay: 0.6s; }
+.baris-surat:nth-of-type(2) { animation-delay: 1.4s; }
+.baris-surat:nth-of-type(3) { animation-delay: 2.2s; }
+.baris-surat:nth-of-type(4) { animation-delay: 2.8s; }
 
 @keyframes munculBaris {
     to { opacity: 1; transform: translateY(0); }
@@ -315,8 +410,8 @@ p{
 
 /* Buket tulip dekoratif (ilustrasi SVG, 12 tangkai mengumpul jadi satu buket) */
 .buket-wrap {
-    margin: 18px auto 4px;
-    max-width: 280px;
+    margin: 22px auto 22px;
+    max-width: 270px;
 }
 #svgBuket {
     width: 100%;
@@ -331,12 +426,6 @@ p{
 @keyframes goyangTangkai {
     0%, 100% { transform: rotate(-1.2deg); }
     50% { transform: rotate(1.2deg); }
-}
-.caption-buket {
-    font-family: 'Caveat', cursive;
-    font-size: 20px;
-    color: #b8446b;
-    margin-top: 4px;
 }
 </style>
 
@@ -370,14 +459,18 @@ p{
 <div class="buket-wrap">
     <svg id="svgBuket" viewBox="0 0 300 380" aria-hidden="true"></svg>
 </div>
-<p class="caption-buket">1 buket tulip pink, 12 tangkai 🌷</p>
 
 <p class="pesan-utama">Makasih ya udah hadir di hidupku ❤️</p>
 <p class="pesan-utama kedua">Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
 
-<button id="tombol" onclick="munculSurat()" style="padding:12px 25px; font-size:18px; border:none; border-radius:15px; background:#ff6fa5; color:white; cursor:pointer;">
-💌 Buka Surat
-</button>
+<div class="amplop-wrap" id="amplopWrap">
+    <div class="amplop" id="amplop" onclick="munculSurat()" onkeypress="if(event.key==='Enter'){munculSurat();}" role="button" tabindex="0" aria-label="Buka surat">
+        <div class="badan"></div>
+        <div class="flap"></div>
+        <div class="segel">💌</div>
+    </div>
+    <div class="amplop-label" id="amplopLabel">Ketuk amplopnya buat baca surat</div>
+</div>
 
     <div id="surat">
     <h3>Hai Farah 🌷</h3>
@@ -660,33 +753,37 @@ pasangSwipe(document.getElementById("sliderContainer"), geserFoto);
 pasangSwipe(document.getElementById("fotoBesar"), geserFoto);
 
 function munculSurat(){
+    let amplop = document.getElementById("amplop");
+    let amplopWrap = document.getElementById("amplopWrap");
+    let amplopLabel = document.getElementById("amplopLabel");
     let surat = document.getElementById("surat");
-    let tombol = document.getElementById("tombol");
 
-    surat.style.display = "block";
+    if (amplop.classList.contains("terbuka")) return; // cegah diklik berkali-kali
 
+    // 1. Buka flap amplop (animasi lipatan terbuka ke belakang)
+    amplop.classList.add("terbuka");
+    amplopLabel.textContent = "💌 Surat sudah dibuka";
+
+    // 2. Amplop memudar & sedikit naik, surat muncul dengan animasi "pop" (bukan cuma fade)
     setTimeout(function(){
-        surat.style.opacity = "1";
-    },100);
+        amplopWrap.classList.add("tersembunyi");
+        surat.classList.add("muncul");
+    }, 450);
 
-    tombol.innerHTML = "❤️ Surat Sudah Dibuka";
-    tombol.style.background = "#cc3366";
-
+    // 3. Hujan hati muncul begitu suratnya kelihatan
     setTimeout(function(){
-        tombol.style.display = "none";
-    },1500);
-
-    for(let i=0;i<15;i++){
-        let hati = document.createElement("div");
-        hati.innerHTML = "❤️";
-        hati.className = "hati";
-        hati.style.left = Math.random()*100 + "vw";
-        hati.style.animationDuration = (Math.random()*3 + 2) + "s";
-        document.body.appendChild(hati);
-        setTimeout(function() {
-            hati.remove();
-        }, 5000);
-    }
+        for(let i=0;i<15;i++){
+            let hati = document.createElement("div");
+            hati.innerHTML = "❤️";
+            hati.className = "hati";
+            hati.style.left = Math.random()*100 + "vw";
+            hati.style.animationDuration = (Math.random()*3 + 2) + "s";
+            document.body.appendChild(hati);
+            setTimeout(function() {
+                hati.remove();
+            }, 5000);
+        }
+    }, 500);
 }
 
 function bukaFoto(jalurGambar){

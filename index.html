@@ -331,6 +331,38 @@ p{
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Buket tulip sebagai watermark halus di bagian bawah surat, di-clip lewat wadah terpisah
+   supaya tidak ikut memotong pita dekoratif di pojok surat */
+.surat-tanda-air-wrap {
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+.surat-tanda-air {
+    position: absolute;
+    left: 50%;
+    bottom: -18px;
+    transform: translateX(-50%);
+    width: 230px;
+    opacity: 0.16;
+}
+.surat-tanda-air svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.svg-tangkai {
+    animation: goyangTangkai 3.5s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+@keyframes goyangTangkai {
+    0%, 100% { transform: rotate(-1.2deg); }
+    50% { transform: rotate(1.2deg); }
+}
+
 /* Animasi Hati */
 .hati{
     position:fixed;
@@ -499,26 +531,6 @@ p{
     margin-top: 8px;
     opacity: 0.85;
 }
-
-/* Buket tulip dekoratif (ilustrasi SVG, 12 tangkai mengumpul jadi satu buket) */
-.buket-wrap {
-    margin: 22px auto 22px;
-    max-width: 270px;
-}
-#svgBuket {
-    width: 100%;
-    height: auto;
-    display: block;
-    filter: drop-shadow(0 6px 10px rgba(255,77,136,0.18));
-}
-.svg-tangkai {
-    animation: goyangTangkai 3.5s ease-in-out infinite;
-    transform-origin: bottom center;
-}
-@keyframes goyangTangkai {
-    0%, 100% { transform: rotate(-1.2deg); }
-    50% { transform: rotate(1.2deg); }
-}
 </style>
 
 </head>
@@ -563,10 +575,6 @@ p{
 <p class="petunjuk-swipe">← geser foto →</p>
 <p class="status-muat" id="statusMuat" style="display:none;"></p>
 
-<div class="buket-wrap">
-    <svg id="svgBuket" viewBox="0 0 300 380" aria-hidden="true"></svg>
-</div>
-
 <p class="pesan-utama">Makasih ya udah hadir di hidupku ❤️</p>
 <p class="pesan-utama kedua">Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
 
@@ -588,6 +596,11 @@ p{
 </div>
 
     <div id="surat">
+    <div class="surat-tanda-air-wrap">
+        <div class="surat-tanda-air">
+            <svg id="svgBuket" viewBox="0 0 300 380" aria-hidden="true"></svg>
+        </div>
+    </div>
     <div class="surat-pita">🎀</div>
     <h3>Hai Farah 🌷</h3>
     <p class="baris-surat">Semoga hari-harimu selalu dipenuhi hal baik, dan semoga aku bisa jadi salah satu alasan kamu tersenyum.</p>
@@ -637,6 +650,7 @@ document.getElementById("laguLatar").addEventListener("ended", function() {
 });
 
 // ===== Gambar ilustrasi buket tulip (12 tangkai mengumpul dalam 1 buket) =====
+// Sekarang dipakai sebagai watermark halus di dalam surat, bukan sebagai elemen utama.
 function gambarBuketTulip() {
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.getElementById("svgBuket");

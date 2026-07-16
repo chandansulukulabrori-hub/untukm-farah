@@ -113,12 +113,16 @@ p{
 .amplop-wrap {
     margin: 22px auto 0;
     width: 130px;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    overflow: hidden;
 }
 .amplop-wrap.tersembunyi {
     opacity: 0;
-    transform: translateY(-10px) scale(0.9);
+    transform: translateY(-10px) scale(0.92);
     pointer-events: none;
+}
+.amplop-wrap.tersembunyi-total {
+    display: none;
 }
 .amplop {
     position: relative;
@@ -130,61 +134,41 @@ p{
     transition: transform 0.2s ease;
 }
 .amplop:hover { transform: translateY(-2px); }
-.amplop:active { transform: scale(0.95); }
+.amplop:active { transform: scale(0.96); }
 .amplop .badan {
     position: absolute;
     left: 0; top: 14px; width: 100%; height: 71px;
     background: linear-gradient(160deg, #ff8fbe, #ff6fa5);
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 10px 20px rgba(255,77,136,0.35);
     overflow: hidden;
 }
-.amplop .badan::before,
-.amplop .badan::after {
-    content: "";
-    position: absolute; bottom: 0; width: 0; height: 0;
-    border-style: solid;
+/* Jahitan/lipatan dalam amplop digambar sebagai garis lengkung lembut, bukan segitiga tajam */
+.amplop .badan .jahitan {
+    position: absolute;
+    left: 0; top: 0; width: 100%; height: 100%;
 }
-.amplop .badan::before {
-    left: 0;
-    border-width: 0 0 40px 65px;
-    border-color: transparent transparent rgba(255,255,255,0.2) transparent;
-}
-.amplop .badan::after {
-    right: 0;
-    border-width: 0 65px 40px 0;
-    border-color: transparent transparent rgba(255,255,255,0.2) transparent;
+/* Garis hati kecil di badan amplop sebagai aksen, menggantikan ikon surat putih yang lama */
+.amplop .aksen-hati {
+    position: absolute;
+    left: 50%; bottom: 10px;
+    transform: translateX(-50%);
+    font-size: 13px;
+    z-index: 2;
+    opacity: 0.9;
 }
 .amplop .flap {
     position: absolute;
-    left: 0; top: 0; width: 100%; height: 48px;
-    background: linear-gradient(160deg, #ffa6d1, #ff6fa5);
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    left: 0; top: 0; width: 100%; height: 46px;
     transform-origin: top center;
     transform: rotateX(0deg);
-    transition: transform 0.6s cubic-bezier(.45,-0.3,.2,1.3);
+    transition: transform 0.9s ease-in-out;
     z-index: 4;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
 }
+.amplop .flap svg { display: block; width: 100%; height: 100%; }
 .amplop.terbuka .flap {
     transform: rotateX(180deg);
-}
-.amplop .segel {
-    position: absolute;
-    left: 50%; top: 32px;
-    width: 28px; height: 28px;
-    background: #fff;
-    border-radius: 50%;
-    transform: translate(-50%, 0) scale(1);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-    z-index: 5;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.amplop.terbuka .segel {
-    opacity: 0;
-    transform: translate(-50%, -6px) scale(0.4);
 }
 .amplop-label {
     font-family: 'Pacifico', cursive;
@@ -196,13 +180,14 @@ p{
 
 #surat{
     display:none;
-    margin-top:20px;
-    padding:24px 22px;
+    margin-top:8px;
+    padding:22px 20px;
     background:white;
     border-radius:15px;
     box-shadow:0 0 15px rgba(0,0,0,0.1);
     text-align:left;
     transform-origin: top center;
+    position: relative;
 }
 #surat.muncul {
     display: block;
@@ -214,27 +199,38 @@ p{
     100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
 }
 
+/* Pita dekoratif di pojok surat */
+.surat-pita {
+    position: absolute;
+    top: -14px;
+    right: 18px;
+    font-size: 30px;
+    transform: rotate(8deg);
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.15));
+}
+
 #surat h3 {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 /* Isi surat: font hangat, dan tiap baris muncul satu-satu */
 .baris-surat {
     font-family: 'Caveat', cursive;
-    font-size: 25px;
+    font-size: 24px;
     font-weight: 500;
     color: #8a2846;
-    line-height: 1.6;
+    line-height: 1.3;
     letter-spacing: 0.3px;
+    margin: 4px 0;
     opacity: 0;
     transform: translateY(12px);
     animation: munculBaris 0.7s ease forwards;
 }
 
-.baris-surat:nth-of-type(1) { animation-delay: 0.6s; }
-.baris-surat:nth-of-type(2) { animation-delay: 1.4s; }
-.baris-surat:nth-of-type(3) { animation-delay: 2.2s; }
-.baris-surat:nth-of-type(4) { animation-delay: 2.8s; }
+.baris-surat:nth-of-type(1) { animation-delay: 0.5s; }
+.baris-surat:nth-of-type(2) { animation-delay: 1.1s; }
+.baris-surat:nth-of-type(3) { animation-delay: 1.7s; }
+.baris-surat:nth-of-type(4) { animation-delay: 2.1s; }
 
 @keyframes munculBaris {
     to { opacity: 1; transform: translateY(0); }
@@ -465,14 +461,23 @@ p{
 
 <div class="amplop-wrap" id="amplopWrap">
     <div class="amplop" id="amplop" onclick="munculSurat()" onkeypress="if(event.key==='Enter'){munculSurat();}" role="button" tabindex="0" aria-label="Buka surat">
-        <div class="badan"></div>
-        <div class="flap"></div>
-        <div class="segel">💌</div>
+        <div class="badan">
+            <svg class="jahitan" viewBox="0 0 130 71" preserveAspectRatio="none">
+                <path d="M6,6 C40,32 55,42 65,42 C75,42 90,32 124,6" stroke="rgba(255,255,255,0.4)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="flap">
+            <svg viewBox="0 0 130 46" preserveAspectRatio="none">
+                <path d="M7,3 C7,3 55,3 65,3 C75,3 123,3 123,3 C123,6 121,9 117,12 L72,39 C68,42 62,42 58,39 L13,12 C9,9 7,6 7,3 Z" fill="#ff77ac"/>
+            </svg>
+        </div>
+        <div class="aksen-hati">❤️</div>
     </div>
     <div class="amplop-label" id="amplopLabel">Ketuk amplopnya buat baca surat</div>
 </div>
 
     <div id="surat">
+    <div class="surat-pita">🎀</div>
     <h3>Hai Farah 🌷</h3>
     <p class="baris-surat">Semoga hari-harimu selalu dipenuhi hal baik, dan semoga aku bisa jadi salah satu alasan kamu tersenyum.</p>
     <p class="baris-surat">❤️</p>
@@ -760,17 +765,23 @@ function munculSurat(){
 
     if (amplop.classList.contains("terbuka")) return; // cegah diklik berkali-kali
 
-    // 1. Buka flap amplop (animasi lipatan terbuka ke belakang)
+    // 1. Flap amplop terbuka perlahan (0.9 detik, smooth tanpa "mantul")
     amplop.classList.add("terbuka");
     amplopLabel.textContent = "💌 Surat sudah dibuka";
 
-    // 2. Amplop memudar & sedikit naik, surat muncul dengan animasi "pop" (bukan cuma fade)
+    // 2. Setelah flap kebuka penuh, amplop baru memudar & suratnya muncul dengan animasi pop
     setTimeout(function(){
         amplopWrap.classList.add("tersembunyi");
         surat.classList.add("muncul");
-    }, 450);
+    }, 950);
 
-    // 3. Hujan hati muncul begitu suratnya kelihatan
+    // 3. Setelah amplop selesai memudar, benar-benar disembunyikan (display:none)
+    //    biar ruang kosongnya kolaps dan jarak ke surat nggak jadi renggang
+    setTimeout(function(){
+        amplopWrap.classList.add("tersembunyi-total");
+    }, 1400);
+
+    // 4. Hujan hati muncul begitu suratnya kelihatan
     setTimeout(function(){
         for(let i=0;i<15;i++){
             let hati = document.createElement("div");
@@ -783,7 +794,7 @@ function munculSurat(){
                 hati.remove();
             }, 5000);
         }
-    }, 500);
+    }, 1000);
 }
 
 function bukaFoto(jalurGambar){

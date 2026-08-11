@@ -1,1096 +1,170 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Untuk Farah 🌷</title>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Caveat:wght@500;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-    body{
-    background:#ffe6f0;
-    text-align:center;
-    font-family:'Poppins', sans-serif;
-    padding:40px;
-    max-width:700px;
-    margin:auto;
-    overflow-x: hidden;
-    }
-
-/* ===== Mini Music Player ===== */
-.player-wrap {
-    max-width: 300px;
-    margin: 18px auto 8px;
-    background: linear-gradient(135deg, #ffffff, #fff5f9);
-    border-radius: 18px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 20px rgba(255,77,136,0.18);
-    border: 1.5px solid #ffd6e8;
-}
-.player-tombol {
-    flex-shrink: 0;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: linear-gradient(160deg, #ff8fbe, #ff4d88);
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255,77,136,0.35);
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.15s ease;
-}
-.player-tombol:active { transform: scale(0.92); }
-.player-tombol svg { width: 18px; height: 18px; fill: white; }
-
-.player-info {
-    flex: 1;
-    text-align: left;
-    min-width: 0;
-}
-.player-judul {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    color: #d6336c;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.player-artis {
-    font-size: 12px;
-    color: #ff88b3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 1px;
-}
-
-/* Equalizer kecil, aktif cuma pas lagu diputar */
-.player-eq {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 16px;
-    flex-shrink: 0;
-}
-.player-eq span {
-    display: block;
-    width: 3px;
-    background: #ff4d88;
-    border-radius: 2px;
-    height: 4px;
-    animation: none;
-}
-.player-eq.aktif span {
-    animation: eqGoyang 0.9s ease-in-out infinite;
-}
-.player-eq span:nth-child(1) { animation-delay: 0s; }
-.player-eq span:nth-child(2) { animation-delay: 0.2s; }
-.player-eq span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes eqGoyang {
-    0%, 100% { height: 4px; }
-    50% { height: 15px; }
-}
-
-/* Wadah utama slider foto */
-.slider-container {
-    position: relative;
-    max-width: 250px;
-    margin: 20px auto;
-    touch-action: pan-y; /* biar swipe horizontal gak bentrok sama scroll vertikal */
-}
-
-/* Mengatur semua foto di dalam slider */
-.slider-foto {
-    display: none;
-    width: 250px;
-    height: 330px;
-    object-fit: cover;
-    border-radius: 20px;
-    box-shadow: 0 0 20px pink;
-    cursor: pointer;
-    transition: 0.3s;
-    -webkit-user-drag: none;
-    user-select: none;
-}
-
-/* Hanya foto dengan class 'aktif' yang akan muncul */
-.slider-foto.aktif {
-    display: block;
-}
-
-.slider-foto.aktif, #fotoBesar img.aktif-pop {
-    display: block;
-    animation: pudarHalus 0.4s ease-in-out;
-}
-
-@keyframes pudarHalus {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* Dot indicator, sekarang bisa diklik dengan tap target lebih besar */
-.dot-container {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 12px;
-}
-
-.dot-tap {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    border: none;
-    background: none;
-    padding: 0;
-}
-
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ffb3d1;
-    transition: 0.3s;
-}
-
-.dot.aktif {
-    background: #ff4d88;
-    transform: scale(1.3);
-}
-
-/* Petunjuk swipe kecil */
-.petunjuk-swipe {
-    font-size: 13px;
-    color: #ff88b3;
-    margin-top: 6px;
-    opacity: 0.8;
-}
-
-/* Judul dan Tombol Surat */
-h1, #surat h3 {
-    font-family: 'Pacifico', cursive;
-    color:#ff4d88;
-}
-
-p{
-    font-size:20px;
-}
-
-/* Teks pesan utama di bawah foto */
-.pesan-utama {
-    font-family: 'Caveat', cursive;
-    font-weight: 600;
-    font-size: 30px;
-    color: #d6336c;
-    line-height: 1.35;
-    margin: 16px auto;
-    max-width: 320px;
-}
-
-.pesan-utama.kedua {
-    font-weight: 500;
-    font-size: 26px;
-    color: #b8446b;
-}
-
-/* ===== Amplop (tombol buka surat) ===== */
-.amplop-wrap {
-    margin: 22px auto 0;
-    width: 130px;
-    transition: opacity 0.45s ease, transform 0.45s ease;
-    overflow: hidden;
-}
-.amplop-wrap.tersembunyi {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.92);
-    pointer-events: none;
-}
-.amplop-wrap.tersembunyi-total {
-    display: none;
-}
-.amplop {
-    position: relative;
-    width: 130px;
-    height: 85px;
-    margin: 0 auto;
-    cursor: pointer;
-    perspective: 700px;
-    transition: transform 0.2s ease;
-}
-.amplop:hover { transform: translateY(-2px); }
-.amplop:active { transform: scale(0.96); }
-.amplop .badan {
-    position: absolute;
-    left: 0; top: 14px; width: 100%; height: 71px;
-    background: linear-gradient(160deg, #ff8fbe, #ff6fa5);
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(255,77,136,0.35);
-    overflow: hidden;
-}
-/* Jahitan/lipatan dalam amplop digambar sebagai garis lengkung lembut, bukan segitiga tajam */
-.amplop .badan .jahitan {
-    position: absolute;
-    left: 0; top: 0; width: 100%; height: 100%;
-}
-/* Garis hati kecil di badan amplop sebagai aksen, menggantikan ikon surat putih yang lama */
-.amplop .aksen-hati {
-    position: absolute;
-    left: 50%; bottom: 10px;
-    transform: translateX(-50%);
-    font-size: 13px;
-    z-index: 2;
-    opacity: 0.9;
-}
-.amplop .flap {
-    position: absolute;
-    left: 0; top: 0; width: 100%; height: 46px;
-    transform-origin: top center;
-    transform: rotateX(0deg);
-    transition: transform 0.9s ease-in-out;
-    z-index: 4;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
-}
-.amplop .flap svg { display: block; width: 100%; height: 100%; }
-.amplop.terbuka .flap {
-    transform: rotateX(180deg);
-}
-.amplop-label {
-    font-family: 'Pacifico', cursive;
-    color: #ff4d88;
-    font-size: 14px;
-    margin-top: 10px;
-    text-align: center;
-}
-
-#surat{
-    display:none;
-    margin-top:8px;
-    padding:22px 20px;
-    background:white;
-    border-radius:15px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
-    text-align:left;
-    transform-origin: top center;
-    position: relative;
-}
-#surat.muncul {
-    display: block;
-    animation: suratMuncul 0.75s cubic-bezier(.34,1.56,.64,1) forwards;
-}
-@keyframes suratMuncul {
-    0%   { opacity: 0; transform: translateY(35px) scale(0.8) rotate(-3deg); }
-    55%  { opacity: 1; transform: translateY(-6px) scale(1.03) rotate(1deg); }
-    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-}
-
-/* Pita dekoratif di pojok surat. Tersembunyi dulu, baru muncul dengan pantulan
-   lembut lewat class "tampil" yang ditambahkan JS setelah buket selesai muncul. */
-.surat-pita {
-    position: absolute;
-    top: -14px;
-    right: 18px;
-    font-size: 30px;
-    transform: rotate(8deg) scale(0.4);
-    opacity: 0;
-    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.15));
-}
-.surat-pita.tampil {
-    animation: pitaMuncul 0.6s cubic-bezier(.34,1.56,.64,1) forwards;
-}
-@keyframes pitaMuncul {
-    0%   { opacity: 0; transform: rotate(8deg) scale(0.4); }
-    60%  { opacity: 1; transform: rotate(8deg) scale(1.18); }
-    100% { opacity: 1; transform: rotate(8deg) scale(1); }
-}
-
-#surat h3 {
-    margin-bottom: 10px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-}
-#surat h3.tampil {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Isi surat: font hangat, tiap baris disembunyikan dulu lalu dimunculkan
-   satu-satu lewat JS (class "tampil") supaya jaraknya bisa dikontrol presisi. */
-.baris-surat {
-    font-family: 'Caveat', cursive;
-    font-size: 24px;
-    font-weight: 500;
-    color: #8a2846;
-    line-height: 1.3;
-    letter-spacing: 0.3px;
-    margin: 4px 0;
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-.baris-surat.tampil {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Buket tulip sebagai watermark halus di bagian bawah surat, di-clip lewat wadah terpisah
-   supaya tidak ikut memotong pita dekoratif di pojok surat. Muncul belakangan lewat JS. */
-.surat-tanda-air-wrap {
-    position: absolute;
-    inset: 0;
-    border-radius: 15px;
-    overflow: hidden;
-    z-index: -1;
-    pointer-events: none;
-}
-.surat-tanda-air {
-    position: absolute;
-    left: 50%;
-    bottom: -18px;
-    transform: translateX(-50%) translateY(12px) scale(0.97);
-    width: 230px;
-    opacity: 0;
-    transition: opacity 0.9s ease-out, transform 0.9s ease-out;
-}
-.surat-tanda-air.tampil {
-    opacity: 0.16;
-    transform: translateX(-50%) translateY(0) scale(1);
-}
-.surat-tanda-air svg {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-.svg-tangkai {
-    animation: goyangTangkai 3.5s ease-in-out infinite;
-    transform-origin: bottom center;
-}
-@keyframes goyangTangkai {
-    0%, 100% { transform: rotate(-1.2deg); }
-    50% { transform: rotate(1.2deg); }
-}
-
-/* Animasi Hati */
-.hati{
-    position:fixed;
-    top:-20px;
-    font-size:25px;
-    z-index: 99999;
-    pointer-events:none;
-    animation:
-    jatuh 4s linear forwards,
-    putar 2s linear infinite;
-}
-
-@keyframes jatuh{
-    from{ top:-20px; }
-    to{ top:100vh; }
-}
-@keyframes putar{
-    from{ transform:rotate(0deg); }
-    to{ transform:rotate(360deg); }
-}
-
-/* Pop-up Foto Layar Penuh */
-#fotoBesar {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh; /* fallback biar gak keganggu address bar Safari iOS yang collapse/expand */
-    background: rgba(0,0,0,0.85);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    touch-action: pan-y;
-}
-#fotoBesar img {
-    display: none;
-    width: 85%;
-    max-width: 450px;
-    border-radius: 15px; 
-    cursor: pointer;
-    -webkit-user-drag: none;
-    user-select: none;
-}
-
-/* Responsif buat HP */
-@media screen and (max-width: 480px) {
-    body { padding: 20px; }
-}
-
-/* ===== Bingkai bertema kado ===== */
-.kado-bingkai {
-    position: relative;
-    background: #fffaf9;
-    border-radius: 28px;
-    padding: 55px 24px 40px;
-    margin-top: 30px;
-    border: 2px dashed #ffb3d1;
-    box-shadow: 0 12px 35px rgba(255, 77, 136, 0.14);
-    background-image:
-        radial-gradient(#ffe0ec 1.5px, transparent 1.5px);
-    background-size: 18px 18px;
-}
-
-/* Pita + simpul pita di bagian atas kartu, seperti kado yang diikat */
-.pita-atas {
-    position: absolute;
-    top: -26px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 34px;
-    height: 46px;
-    z-index: 2;
-}
-
-.pita-atas .tali {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 14px;
-    height: 40px;
-    background: linear-gradient(180deg, #ff7fb0, #ff4d88);
-    border-radius: 3px;
-}
-
-.pita-atas .sayap {
-    position: absolute;
-    top: 6px;
-    width: 20px;
-    height: 26px;
-    background: linear-gradient(135deg, #ff8fbb, #ff4d88);
-    border-radius: 60% 60% 60% 5%;
-}
-
-.pita-atas .sayap.kiri {
-    left: -2px;
-    transform: rotate(-35deg);
-}
-
-.pita-atas .sayap.kanan {
-    right: -2px;
-    transform: rotate(35deg) scaleX(-1);
-}
-
-.pita-atas .simpul {
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 12px;
-    background: #ff4d88;
-    border-radius: 50%;
-    z-index: 3;
-}
-
-/* Gantungan tag kecil di pojok, kayak label kado */
-.tag-gantung {
-    position: absolute;
-    top: -14px;
-    left: 20px;
-    background: #fff;
-    border: 1.5px dashed #ff9dc0;
-    border-radius: 8px 8px 8px 0;
-    padding: 5px 12px 5px 18px;
-    font-family: 'Pacifico', cursive;
-    font-size: 14px;
-    color: #ff4d88;
-    transform: rotate(-6deg);
-    box-shadow: 0 3px 8px rgba(255,77,136,0.15);
-    z-index: 2;
-}
-
-.tag-gantung::before {
-    content: "";
-    position: absolute;
-    left: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 5px;
-    background: #ffe6f0;
-    border: 1px solid #ff9dc0;
-    border-radius: 50%;
-}
-
-/* Fallback kalau gambar gagal dimuat */
-.slider-foto.aktif.gagal-muat, #fotoBesar img.gagal-muat {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffd6e8;
-    color: #ff4d88;
-    font-size: 14px;
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.status-muat {
-    font-size: 13px;
-    color: #ff88b3;
-    margin-top: 8px;
-    opacity: 0.85;
-}
-
-/* Hormati preferensi pengguna yang mematikan animasi */
-@media (prefers-reduced-motion: reduce) {
-    .amplop .flap,
-    .amplop-wrap,
-    #surat.muncul,
-    .surat-pita.tampil,
-    #surat h3,
-    .baris-surat,
-    .surat-tanda-air,
-    .svg-tangkai {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artemis II</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<audio id="laguLatar" src="aboutyou.mp3" preload="metadata"></audio>
 
-<div class="kado-bingkai">
-    <div class="pita-atas">
-        <div class="tali"></div>
-        <div class="sayap kiri"></div>
-        <div class="sayap kanan"></div>
-        <div class="simpul"></div>
-    </div>
-    <div class="tag-gantung">🌷 Untuk Farah</div>
+<!-- BACKGROUND LUAR ANGKASA (Tetap Diam Saat Scroll) -->
+<div id="spaceContainer">
+    <svg id="spaceSvg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <radialGradient id="moonGrad" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#F8FAFC" />
+                <stop offset="70%" stop-color="#CBD5E1" />
+                <stop offset="100%" stop-color="#64748B" />
+            </radialGradient>
+            <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#94A3B8" stop-opacity="0.25" />
+                <stop offset="100%" stop-color="#020814" stop-opacity="0" />
+            </radialGradient>
+            <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" />
+            </filter>
+        </defs>
 
-    <h1>Hai Farah 🌷</h1>
+        <g id="layerDistantStars" class="star-layer">
+            <circle cx="250" cy="180" r="1" fill="#FFFFFF" opacity="0.3" class="twinkle-slow" />
+            <circle cx="520" cy="120" r="1.5" fill="#93C5FD" opacity="0.4" class="twinkle-delayed" />
+            <circle cx="840" cy="220" r="1" fill="#FFFFFF" opacity="0.25" class="twinkle-slow" />
+            <circle cx="1150" cy="150" r="1.2" fill="#FFFFFF" opacity="0.35" class="twinkle-fast" />
+            <circle cx="1450" cy="280" r="1" fill="#93C5FD" opacity="0.3" class="twinkle-delayed" />
+            <circle cx="1720" cy="130" r="1.5" fill="#FFFFFF" opacity="0.2" class="twinkle-slow" />
+            <circle cx="180" cy="480" r="1.2" fill="#FFFFFF" opacity="0.3" class="twinkle-fast" />
+            <circle cx="430" cy="550" r="1" fill="#FFFFFF" opacity="0.2" class="twinkle-slow" />
+            <circle cx="760" cy="420" r="1.5" fill="#93C5FD" opacity="0.35" class="twinkle-delayed" />
+            <circle cx="1080" cy="510" r="1" fill="#FFFFFF" opacity="0.25" class="twinkle-slow" />
+            <circle cx="1380" cy="460" r="1.2" fill="#FFFFFF" opacity="0.3" class="twinkle-fast" />
+            <circle cx="1650" cy="530" r="1" fill="#93C5FD" opacity="0.4" class="twinkle-delayed" />
+            <circle cx="310" cy="820" r="1" fill="#FFFFFF" opacity="0.3" class="twinkle-delayed" />
+            <circle cx="650" cy="780" r="1.5" fill="#FFFFFF" opacity="0.25" class="twinkle-slow" />
+            <circle cx="920" cy="850" r="1" fill="#93C5FD" opacity="0.35" class="twinkle-fast" />
+            <circle cx="1240" cy="790" r="1.2" fill="#FFFFFF" opacity="0.2" class="twinkle-slow" />
+            <circle cx="1580" cy="840" r="1" fill="#FFFFFF" opacity="0.3" class="twinkle-delayed" />
+        </g>
 
-    <!-- ===== Mini Music Player ===== -->
-    <div class="player-wrap">
-        <button class="player-tombol" id="tombolMusik" onclick="toggleMusik()" aria-label="Putar atau jeda lagu">
-            <svg id="ikonPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg id="ikonPause" viewBox="0 0 24 24" style="display:none;"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-        </button>
-        <div class="player-info">
-            <div class="player-judul" id="judulLagu">About You</div>
-            <div class="player-artis" id="artisLagu">The 1975</div>
-        </div>
-        <div class="player-eq" id="playerEq">
-            <span></span><span></span><span></span>
-        </div>
-    </div>
+        <g id="layerMoon" class="moon-group">
+            <circle cx="0" cy="0" r="160" fill="url(#moonGlow)" />
+            <circle cx="0" cy="0" r="95" fill="url(#moonGrad)" />
+            <g opacity="0.12" filter="url(#softBlur)">
+                <ellipse cx="-25" cy="-30" rx="18" ry="12" fill="#334155" transform="rotate(-15 -25 -30)" />
+                <circle cx="35" cy="15" r="22" fill="#334155" />
+                <ellipse cx="-15" cy="40" rx="28" ry="16" fill="#334155" transform="rotate(20 -15 40)" />
+                <circle cx="20" cy="-45" r="12" fill="#334155" />
+            </g>
+        </g>
 
-    <div class="slider-container" id="sliderContainer">
-    <img class="slider-foto aktif" src="IMG-20260610-WA0002.jpg" alt="Foto kenangan 1" onclick="bukaFoto(this.src)" loading="lazy">
-    <img class="slider-foto" src="foto1.jpeg" alt="Foto kenangan 2" onclick="bukaFoto(this.src)" loading="lazy">
-    <img class="slider-foto" src="foto2.jpeg" alt="Foto kenangan 3" onclick="bukaFoto(this.src)" loading="lazy">
-    <img class="slider-foto" src="foto3.jpeg" alt="Foto kenangan 4" onclick="bukaFoto(this.src)" loading="lazy">
-    <img class="slider-foto" src="foto4.jpeg" alt="Foto kenangan 5" onclick="bukaFoto(this.src)" loading="lazy">
+        <g id="layerForegroundStars" class="star-layer">
+            <circle cx="380" cy="250" r="1.8" fill="#FFFFFF" opacity="0.6" class="twinkle-delayed" />
+            <circle cx="980" cy="180" r="2" fill="#E0F2FE" opacity="0.65" class="twinkle-fast" />
+            <circle cx="1520" cy="380" r="1.8" fill="#FFFFFF" opacity="0.55" class="twinkle-slow" />
+            <circle cx="220" cy="720" r="2" fill="#E0F2FE" opacity="0.5" class="twinkle-slow" />
+            <circle cx="810" cy="680" r="1.8" fill="#FFFFFF" opacity="0.6" class="twinkle-fast" />
+            <circle cx="1450" cy="750" r="2" fill="#FFFFFF" opacity="0.55" class="twinkle-delayed" />
+        </g>
+    </svg>
 </div>
 
-<div class="dot-container" id="dotContainer"></div>
-<p class="petunjuk-swipe">← geser foto →</p>
-<p class="status-muat" id="statusMuat" style="display:none;"></p>
-
-<p class="pesan-utama">Makasih ya udah hadir di hidupku ❤️</p>
-<p class="pesan-utama kedua">Semoga kita selalu diberi kebahagiaan dan cerita indah.</p>
-
-<div class="amplop-wrap" id="amplopWrap">
-    <div class="amplop" id="amplop" onclick="munculSurat()" onkeypress="if(event.key==='Enter'){munculSurat();}" role="button" tabindex="0" aria-label="Buka surat">
-        <div class="badan">
-            <svg class="jahitan" viewBox="0 0 130 71" preserveAspectRatio="none">
-                <path d="M6,6 C40,32 55,42 65,42 C75,42 90,32 124,6" stroke="rgba(255,255,255,0.4)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- LANDING & PELUNCURAN ROKET -->
+<section id="landing">
+    <div class="content">
+        <p class="small-title">GRADUATION MISSION</p>
+        <h1>Untuk Farahdhyba 🌷</h1>
+        
+        <button id="launchButton">🚀 Launch Artemis II</button>
+        <h2 id="countdown"></h2>
+        
+        <div id="rocketContainer">
+            <div class="smoke-cloud smoke-left"></div>
+            <div class="smoke-cloud smoke-right"></div>
+            <div class="smoke-cloud smoke-nozzle"></div>
+            
+            <svg id="rocket" width="100" height="160" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">
+                <g id="flameGroup">
+                    <path class="flame-main" d="M 40 120 Q 50 170 60 120 Z" fill="#ff9d00"/>
+                    <path class="flame-core" d="M 45 120 Q 50 145 55 120 Z" fill="#ffea00"/>
+                </g>
+                <path d="M 50 40 L 20 110 L 30 110 L 50 80 Z" fill="#dce1e6"/>
+                <path d="M 50 40 L 80 110 L 70 110 L 50 80 Z" fill="#dce1e6"/>
+                <path d="M 50 10 C 35 30 30 60 30 110 L 70 110 C 70 60 65 30 50 10 Z" fill="#ffffff"/>
+                <path d="M 50 10 C 60 25 70 60 70 110 L 65 110 C 65 65 57 30 50 10 Z" fill="#f0f2f5"/>
+                <circle cx="50" cy="50" r="10" fill="#1d3d7a"/>
+                <circle cx="48" cy="48" r="4" fill="#8aa6d9"/> 
+                <path d="M 35 110 L 65 110 L 60 120 L 40 120 Z" fill="#2c3e50"/>
             </svg>
         </div>
-        <div class="flap">
-            <svg viewBox="0 0 130 46" preserveAspectRatio="none">
-                <path d="M7,3 C7,3 55,3 65,3 C75,3 123,3 123,3 C123,6 121,9 117,12 L72,39 C68,42 62,42 58,39 L13,12 C9,9 7,6 7,3 Z" fill="#ff77ac"/>
-            </svg>
+    </div>
+</section>
+
+<!-- POST-LAUNCH CONTENT (Muncul Setelah Roket Terbang) -->
+<div id="postLaunchContent" class="hidden">
+    
+    <!-- Bagian 1: Pengantar & Galeri Senyum -->
+    <section class="story-section">
+        <div class="text-block fade-on-scroll">
+            <p>Artemis membawa ribuan foto bulan.</p>
+            <p>Aku nggak punya foto sebanyak itu.</p>
+            <br>
+            <p>Tapi setiap kali buka galeri,</p>
+            <p>ada beberapa senyum yang selalu berhasil bikin hariku lebih ringan.</p>
         </div>
-        <div class="aksen-hati">❤️</div>
-    </div>
-    <div class="amplop-label" id="amplopLabel">Ketuk amplopnya buat baca surat</div>
-</div>
-
-    <div id="surat">
-    <div class="surat-tanda-air-wrap">
-        <div class="surat-tanda-air">
-            <svg id="svgBuket" viewBox="0 0 300 380" aria-hidden="true"></svg>
+        
+        <div class="gallery horizontal-gallery fade-on-scroll">
+            <!-- Ganti src dengan foto asli Farah yang ada di folder project lo -->
+            <img src="assets/smile-1.jpg" alt="Foto 1">
+            <img src="assets/smile-2.jpg" alt="Foto 2">
+            <img src="assets/smile-3.jpg" alt="Foto 3">
+            <img src="assets/smile-4.jpg" alt="Foto 4">
+            <img src="assets/smile-5.jpg" alt="Foto 5">
         </div>
-    </div>
-    <div class="surat-pita">🎀</div>
-    <h3>Hai Farah 🌷</h3>
-    <p class="baris-surat">Semoga hari-harimu selalu dipenuhi hal baik, dan semoga aku bisa jadi salah satu alasan kamu tersenyum.</p>
-    <p class="baris-surat">❤️</p>
-    </div>
+    </section>
+
+    <!-- Bagian 2: Pesan Utama -->
+    <section class="story-section">
+        <div class="text-block main-message fade-on-scroll">
+            <p>Sayang, aku bangga kamu sekarang udah wisuda.<br>Kamu udah berjalan sejauh ini.</p>
+            <br>
+            <p>Kalau nanti kamu memilih mengejar mimpi-mimpimu,<br>aku akan tetap bangga sama kamu.</p>
+            <br>
+            <p>Kalau suatu saat hidup membuatmu harus menunda sebagian mimpimu,<br>aku juga akan menghormati pilihanmu.<br>Karena aku tahu, itu juga butuh keberanian.</p>
+            <br>
+            <p>Dan semoga, kalau memang ada mimpi yang harus ditunda,<br>Tuhan menggantinya dengan sesuatu yang jauh lebih baik<br>dari yang pernah kamu bayangkan.</p>
+            <br>
+            <p>Apa pun jalan yang nanti kamu pilih…<br>aku akan tetap bangga sama kamu.</p>
+        </div>
+    </section>
+
+    <!-- Bagian 3: Galeri Wisuda/Timeline -->
+    <section class="story-section">
+        <div class="gallery vertical-gallery fade-on-scroll">
+            <div class="gallery-item">
+                <!-- Ganti src dengan foto asli Farah setelah sidang -->
+                <img src="assets/grad-1.jpg" alt="Grad 1">
+                <p class="caption">after the defense</p>
+            </div>
+            <div class="gallery-item fade-on-scroll">
+                <img src="assets/grad-2.jpg" alt="Grad 2">
+                <p class="caption">one step further</p>
+            </div>
+            <div class="gallery-item fade-on-scroll">
+                <img src="assets/grad-3.jpg" alt="Grad 3">
+                <p class="caption">you made it</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bagian 4: Ending -->
+    <section class="story-section ending-section">
+        <div class="fade-on-scroll">
+            <p class="ending-text">Until the next chapter.</p>
+        </div>
+    </section>
+
 </div>
 
-<div id="fotoBesar" onclick="tutupFoto()">
-    <img src="" alt="Foto diperbesar">
-</div>
-
-<script>
-// ===== Mini Music Player =====
-function toggleMusik() {
-    let audio = document.getElementById("laguLatar");
-    let ikonPlay = document.getElementById("ikonPlay");
-    let ikonPause = document.getElementById("ikonPause");
-    let eq = document.getElementById("playerEq");
-
-    if (audio.paused) {
-        // Dipanggil langsung di dalam event handler klik (bukan lewat setTimeout/promise
-        // tertunda), supaya iOS Safari menganggap ini sebagai user-gesture yang sah
-        // dan tidak memblokir autoplay-nya.
-        let janji = audio.play();
-        if (janji !== undefined) {
-            janji.then(function() {
-                ikonPlay.style.display = "none";
-                ikonPause.style.display = "block";
-                eq.classList.add("aktif");
-            }).catch(function() {
-                // Kalau tetap gagal (jarang terjadi karena ini sudah lewat tap user),
-                // biarkan tombol tetap di posisi "play" biar user bisa coba lagi.
-            });
-        }
-    } else {
-        audio.pause();
-        ikonPlay.style.display = "block";
-        ikonPause.style.display = "none";
-        eq.classList.remove("aktif");
-    }
-}
-
-document.getElementById("laguLatar").addEventListener("ended", function() {
-    document.getElementById("ikonPlay").style.display = "block";
-    document.getElementById("ikonPause").style.display = "none";
-    document.getElementById("playerEq").classList.remove("aktif");
-});
-
-// ===== Gambar ilustrasi buket tulip (12 tangkai mengumpul dalam 1 buket) =====
-// Dipakai sebagai watermark halus di dalam surat, dimunculkan belakangan lewat JS.
-function gambarBuketTulip() {
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.getElementById("svgBuket");
-    if (!svg) return;
-
-    const titikTemu = { x: 150, y: 300 }; // titik ikatan buket (semua tangkai mengumpul di sini)
-    const jumlahTulip = 12;
-    const warnaUjung = ["#ffb3d1","#ffc2dd","#ffaec9","#ffd1e3","#ffbedd","#ffe0ec"];
-
-    const bentukTahap = [
-        { d: "M-5,0 C-6.5,-6 -5.5,-13 0,-16.5 C5.5,-13 6.5,-6 5,0 C5,1.6 -5,1.6 -5,0 Z", skala: 1 },
-        { d: "M-6,0 C-7.5,-7 -6.5,-14 -3,-17.5 C-1.5,-19 1.5,-19 3,-17.5 C6.5,-14 7.5,-7 6,0 C6,1.8 -6,1.8 -6,0 Z", skala: 1 },
-        { d: "M-7,0 C-8.5,-7 -8,-11.5 -7,-13.5 C-6,-15.5 -4,-15 -3,-14.5 C-2.3,-16.8 -1,-19 0,-19 C1,-19 2.3,-16.8 3,-14.5 C4,-15 6,-15.5 7,-13.5 C8,-11.5 8.5,-7 7,0 C7,1.8 -7,1.8 -7,0 Z", skala: 1 },
-        { d: "M-7.5,0 C-9,-6.5 -9.5,-9.5 -10.5,-11.8 C-11.3,-13.6 -9.3,-14.4 -7.3,-13 C-5.6,-15 -3.6,-16.3 -2.3,-12.6 C-1.4,-15.6 -1,-18 0,-18 C1,-18 1.4,-15.6 2.3,-12.6 C3.6,-16.3 5.6,-15 7.3,-13 C9.3,-14.4 11.3,-13.6 10.5,-11.8 C9.5,-9.5 9,-6.5 7.5,0 C7.5,1.8 -7.5,1.8 -7.5,0 Z", skala: 1 }
-    ];
-    const skalaTahap = [0.72, 0.88, 1.05, 1.22];
-    const urutanTahap = [0, 2, 1, 3, 2, 0, 3, 1, 2, 3, 0, 2];
-
-    function buatPath(d, fill, stroke) {
-        let p = document.createElementNS(svgNS, "path");
-        p.setAttribute("d", d);
-        if (fill) p.setAttribute("fill", fill);
-        if (stroke) { p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", "1"); }
-        return p;
-    }
-
-    let defs = document.createElementNS(svgNS, "defs");
-    svg.appendChild(defs);
-
-    const daunPaths = [
-        "M150,300 C110,280 70,240 60,180 C90,220 120,250 150,300 Z",
-        "M150,300 C190,280 230,240 240,180 C210,220 180,250 150,300 Z",
-        "M150,300 C130,270 110,220 115,160 C140,200 155,250 150,300 Z",
-        "M150,300 C170,270 190,220 185,160 C160,200 145,250 150,300 Z"
-    ];
-    daunPaths.forEach(function(d, i){
-        let daun = buatPath(d, i % 2 === 0 ? "#5fae7c" : "#4f9c6c");
-        daun.setAttribute("opacity", "0.95");
-        svg.appendChild(daun);
-    });
-
-    const grupTangkai = document.createElementNS(svgNS, "g");
-    for (let i = 0; i < jumlahTulip; i++) {
-        let sudutDeg = -50 + (100 / (jumlahTulip - 1)) * i;
-        let jitter = (Math.sin(i * 12.9) * 4);
-        sudutDeg += jitter;
-        let sudutRad = (sudutDeg - 90) * Math.PI / 180;
-
-        let panjang = 155 + (i % 3) * 12 + Math.abs(Math.sin(i * 3.1)) * 10;
-        let kepalaX = titikTemu.x + Math.cos(sudutRad) * panjang;
-        let kepalaY = titikTemu.y + Math.sin(sudutRad) * panjang;
-
-        let kontrolX = titikTemu.x + Math.cos(sudutRad) * (panjang * 0.5) + (sudutDeg * 0.4);
-        let kontrolY = titikTemu.y + Math.sin(sudutRad) * (panjang * 0.5);
-
-        let g = document.createElementNS(svgNS, "g");
-        g.setAttribute("class", "svg-tangkai");
-        g.style.animationDelay = (i * 0.15) + "s";
-
-        let tangkai = buatPath(
-            "M" + titikTemu.x + "," + titikTemu.y + " Q" + kontrolX + "," + kontrolY + " " + kepalaX + "," + kepalaY,
-            "none", "#4f9c6c"
-        );
-        tangkai.setAttribute("stroke-width", "3.5");
-        tangkai.setAttribute("fill", "none");
-        g.appendChild(tangkai);
-
-        let tahap = urutanTahap[i % urutanTahap.length];
-        let bentuk = bentukTahap[tahap];
-        let skala = skalaTahap[tahap];
-        let warnaUjungIni = warnaUjung[i % warnaUjung.length];
-
-        let gradId = "gradTulip" + i;
-        let grad = document.createElementNS(svgNS, "linearGradient");
-        grad.setAttribute("id", gradId);
-        grad.setAttribute("x1", "0"); grad.setAttribute("y1", "1");
-        grad.setAttribute("x2", "0"); grad.setAttribute("y2", "0");
-        let stop1 = document.createElementNS(svgNS, "stop");
-        stop1.setAttribute("offset", "0%"); stop1.setAttribute("stop-color", "#ffffff");
-        let stop2 = document.createElementNS(svgNS, "stop");
-        stop2.setAttribute("offset", "50%"); stop2.setAttribute("stop-color", "#ffd3e4");
-        let stop3 = document.createElementNS(svgNS, "stop");
-        stop3.setAttribute("offset", "100%"); stop3.setAttribute("stop-color", warnaUjungIni);
-        grad.appendChild(stop1); grad.appendChild(stop2); grad.appendChild(stop3);
-        defs.appendChild(grad);
-
-        let kepala = document.createElementNS(svgNS, "g");
-        kepala.setAttribute("transform",
-            "translate(" + kepalaX + "," + kepalaY + ") rotate(" + sudutDeg + ") scale(" + skala + ")"
-        );
-
-        let tulipUtama = buatPath(bentuk.d, "url(#" + gradId + ")", "#fff0f5");
-        tulipUtama.setAttribute("stroke-width", "0.3");
-        kepala.appendChild(tulipUtama);
-
-        let lipatan = document.createElementNS(svgNS, "path");
-        lipatan.setAttribute("d", "M0,-1 C-1.2,-8 -0.5,-13 0,-15.5");
-        lipatan.setAttribute("stroke", "#ffffffaa");
-        lipatan.setAttribute("stroke-width", "0.5");
-        lipatan.setAttribute("fill", "none");
-        kepala.appendChild(lipatan);
-
-        g.appendChild(kepala);
-
-        grupTangkai.appendChild(g);
-    }
-    svg.appendChild(grupTangkai);
-
-    let tali = buatPath(
-        "M120," + (titikTemu.y - 6) + " Q150," + (titikTemu.y + 10) + " 180," + (titikTemu.y - 6),
-        "none", "#ff4d88"
-    );
-    tali.setAttribute("stroke-width", "5");
-    tali.setAttribute("fill", "none");
-    tali.setAttribute("stroke-linecap", "round");
-    svg.appendChild(tali);
-
-    let pembungkus = buatPath(
-        "M100," + titikTemu.y + " L150,375 L200," + titikTemu.y + " Z",
-        "#fff3f7", "#ffc2dd"
-    );
-    svg.appendChild(pembungkus);
-    let garisPembungkus1 = buatPath("M120," + titikTemu.y + " L150,370", "none", "#ffd6e8");
-    let garisPembungkus2 = buatPath("M180," + titikTemu.y + " L150,370", "none", "#ffd6e8");
-    svg.appendChild(garisPembungkus1);
-    svg.appendChild(garisPembungkus2);
-}
-gambarBuketTulip();
-
-let indeksFoto = 0;
-const daftarFoto = document.getElementsByClassName("slider-foto");
-
-// ===== Preload semua gambar + fallback kalau gagal dimuat =====
-function preloadGambar() {
-    let totalGambar = daftarFoto.length;
-    let selesai = 0;
-    let gagalList = [];
-    let statusEl = document.getElementById("statusMuat");
-
-    for (let i = 0; i < totalGambar; i++) {
-        let imgAsli = daftarFoto[i];
-        let preloader = new Image();
-
-        preloader.onload = function() {
-            selesai++;
-            cekSelesai();
-        };
-
-        preloader.onerror = function() {
-            selesai++;
-            gagalList.push(imgAsli);
-            let namaFileAsli = imgAsli.getAttribute("src");
-            imgAsli.classList.add("gagal-muat");
-            imgAsli.alt = "Foto tidak ditemukan: " + namaFileAsli;
-            imgAsli.setAttribute("data-src-asli", namaFileAsli);
-            imgAsli.src = "data:image/svg+xml;utf8," + encodeURIComponent(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="250" height="330">' +
-                '<rect width="100%" height="100%" fill="#ffd6e8"/>' +
-                '<text x="50%" y="48%" text-anchor="middle" font-size="40" font-family="sans-serif">📷</text>' +
-                '<text x="50%" y="60%" text-anchor="middle" font-size="14" fill="#ff4d88" font-family="sans-serif">Foto belum ketemu</text>' +
-                '</svg>'
-            );
-            imgAsli.onerror = null;
-            cekSelesai();
-        };
-
-        preloader.src = imgAsli.getAttribute("src");
-    }
-
-    function cekSelesai() {
-        if (selesai === totalGambar && gagalList.length > 0) {
-            statusEl.style.display = "block";
-            statusEl.textContent = gagalList.length + " foto gagal dimuat, cek nama filenya ya 📁";
-        }
-    }
-}
-preloadGambar();
-
-// Bikin dot indicator sesuai jumlah foto, sekarang bisa diklik buat lompat langsung
-function buatDot() {
-    let dotContainer = document.getElementById("dotContainer");
-    for (let i = 0; i < daftarFoto.length; i++) {
-        let tombolDot = document.createElement("button");
-        tombolDot.className = "dot-tap";
-        tombolDot.setAttribute("aria-label", "Lihat foto " + (i + 1));
-        tombolDot.onclick = (function(indeks) {
-            return function() { lompatKeFoto(indeks); };
-        })(i);
-
-        let dot = document.createElement("div");
-        dot.className = "dot" + (i === 0 ? " aktif" : "");
-        tombolDot.appendChild(dot);
-
-        dotContainer.appendChild(tombolDot);
-    }
-}
-buatDot();
-
-function perbaruiDot() {
-    let semuaDot = document.querySelectorAll(".dot");
-    semuaDot.forEach(function(dot, i) {
-        dot.classList.toggle("aktif", i === indeksFoto);
-    });
-}
-
-function tampilkanFotoAktif() {
-    daftarFoto[indeksFoto].classList.add("aktif");
-    perbaruiDot();
-
-    let popUp = document.getElementById("fotoBesar");
-    let gambarPopUp = document.querySelector("#fotoBesar img");
-
-    if (popUp.style.display === "flex") {
-        gambarPopUp.classList.remove("aktif-pop");
-        gambarPopUp.src = daftarFoto[indeksFoto].src;
-        setTimeout(function(){
-            gambarPopUp.classList.add("aktif-pop");
-        }, 10);
-    }
-}
-
-function geserFoto(arah) {
-    daftarFoto[indeksFoto].classList.remove("aktif");
-
-    indeksFoto = indeksFoto + arah;
-
-    if (indeksFoto >= daftarFoto.length) {
-        indeksFoto = 0;
-    }
-    if (indeksFoto < 0) {
-        indeksFoto = daftarFoto.length - 1;
-    }
-
-    tampilkanFotoAktif();
-}
-
-// Lompat langsung ke foto tertentu lewat klik dot
-function lompatKeFoto(indeksTujuan) {
-    if (indeksTujuan === indeksFoto) return;
-    daftarFoto[indeksFoto].classList.remove("aktif");
-    indeksFoto = indeksTujuan;
-    tampilkanFotoAktif();
-}
-
-// ===== Fitur Swipe (touch gesture) =====
-function pasangSwipe(elemen, callbackGeser) {
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const ambangBatas = 40; // jarak minimal geser (px) biar dianggap swipe
-
-    elemen.addEventListener("touchstart", function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    elemen.addEventListener("touchend", function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        let jarak = touchEndX - touchStartX;
-        if (Math.abs(jarak) > ambangBatas) {
-            if (jarak < 0) {
-                callbackGeser(1); // swipe ke kiri -> foto berikutnya
-            } else {
-                callbackGeser(-1); // swipe ke kanan -> foto sebelumnya
-            }
-        }
-    }, { passive: true });
-}
-
-pasangSwipe(document.getElementById("sliderContainer"), geserFoto);
-pasangSwipe(document.getElementById("fotoBesar"), geserFoto);
-
-// ================================================================
-// ===== Sekuens sinematik pembukaan surat (dikontrol via JS) =====
-// ================================================================
-
-// Kecilkan promise timeout jadi 0 kalau pengguna minta motion minim,
-// biar sekuens tetap jalan (dan hati tetap muncul) tanpa animasi panjang.
-const gerakMinim = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-function tunda(ms) {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, gerakMinim ? 0 : ms);
-    });
-}
-
-// Menunggu satu event transitionend dari elemen tertentu, dengan fallback
-// timeout supaya sekuens tidak pernah macet kalau event tidak pernah terpicu
-// (misalnya elemen disembunyikan browser sebelum transisi selesai).
-function tungguTransisi(elemen, msFallback) {
-    if (gerakMinim) return Promise.resolve();
-    return new Promise(function(resolve) {
-        let selesai = false;
-        function beres(e) {
-            if (e && e.target !== elemen) return;
-            if (selesai) return;
-            selesai = true;
-            elemen.removeEventListener("transitionend", beres);
-            resolve();
-        }
-        elemen.addEventListener("transitionend", beres);
-        setTimeout(beres, msFallback);
-    });
-}
-
-// Sama seperti di atas tapi untuk animationend (dipakai buket keyframes, dsb).
-function tungguAnimasi(elemen, msFallback) {
-    if (gerakMinim) return Promise.resolve();
-    return new Promise(function(resolve) {
-        let selesai = false;
-        function beres(e) {
-            if (e && e.target !== elemen) return;
-            if (selesai) return;
-            selesai = true;
-            elemen.removeEventListener("animationend", beres);
-            resolve();
-        }
-        elemen.addEventListener("animationend", beres);
-        setTimeout(beres, msFallback);
-    });
-}
-
-async function munculSurat(){
-    let amplop = document.getElementById("amplop");
-    let amplopWrap = document.getElementById("amplopWrap");
-    let amplopLabel = document.getElementById("amplopLabel");
-    let surat = document.getElementById("surat");
-    let flap = amplop.querySelector(".flap");
-    let watermark = surat.querySelector(".surat-tanda-air");
-    let pita = surat.querySelector(".surat-pita");
-    let judul = surat.querySelector("h3");
-    let semuaBaris = surat.querySelectorAll(".baris-surat");
-
-    if (amplop.classList.contains("terbuka")) return; // cegah diklik berkali-kali
-
-    // 1-2. Amplop diketuk, flap terbuka
-    amplop.classList.add("terbuka");
-    amplopLabel.textContent = "💌 Surat sudah dibuka";
-
-    // 3. Tunggu animasi flap terbuka selesai sepenuhnya
-    await tungguTransisi(flap, 950);
-
-    // 4. Pudarkan amplop lalu hilangkan dari alur halaman
-    amplopWrap.classList.add("tersembunyi");
-    await tungguTransisi(amplopWrap, 500);
-    amplopWrap.classList.add("tersembunyi-total");
-
-    // 5. Surat meluncur naik seolah keluar dari amplop, dengan efek per (spring)
-    surat.classList.add("muncul");
-    await tungguAnimasi(surat, 900);
-
-    // 6. Buket watermark muncul dari bawah secara halus
-    watermark.classList.add("tampil");
-    await tungguTransisi(watermark, 1000);
-
-    // 7. Pita di pojok surat muncul dengan sedikit pantulan
-    pita.classList.add("tampil");
-    await tungguAnimasi(pita, 650);
-
-    // 8. Judul surat muncul
-    judul.classList.add("tampil");
-    await tungguTransisi(judul, 600);
-
-    // 9. Setiap baris surat (termasuk hati penutup) muncul satu-satu
-    for (let i = 0; i < semuaBaris.length; i++) {
-        let baris = semuaBaris[i];
-        baris.classList.add("tampil");
-        await tungguTransisi(baris, 650);
-        await tunda(550); // jeda antar baris sekitar 500-700ms
-    }
-
-    // 10-11. Baru sekarang, setelah semua elemen selesai muncul, hujan hati dimulai
-    mulaiHatiJatuh();
-}
-
-// Hujan hati kecil sebagai penutup sekuens, dipisah jadi fungsi sendiri
-// supaya hanya berjalan setelah seluruh reveal surat benar-benar selesai.
-function mulaiHatiJatuh() {
-    let jumlahHati = gerakMinim ? 0 : 15;
-    for (let i = 0; i < jumlahHati; i++) {
-        let hati = document.createElement("div");
-        hati.innerHTML = "❤️";
-        hati.className = "hati";
-        hati.style.left = Math.random() * 100 + "vw";
-        hati.style.animationDuration = (Math.random() * 3 + 2) + "s";
-        document.body.appendChild(hati);
-        setTimeout(function() {
-            hati.remove();
-        }, 5000);
-    }
-}
-
-function bukaFoto(jalurGambar){
-    let gambarPopUp = document.querySelector("#fotoBesar img");
-    gambarPopUp.onerror = function() {
-        gambarPopUp.classList.add("gagal-muat");
-        gambarPopUp.alt = "Foto tidak ditemukan";
-    };
-    gambarPopUp.src = jalurGambar;
-    gambarPopUp.classList.remove("gagal-muat");
-    gambarPopUp.classList.add("aktif-pop");
-
-    document.getElementById("fotoBesar").style.display = "flex";
-}
-
-function tutupFoto(){
-    document.getElementById("fotoBesar").style.display = "none";
-    document.querySelector("#fotoBesar img").classList.remove("aktif-pop");
-}
-</script>
+<script src="script.js"></script>
 </body>
 </html>
